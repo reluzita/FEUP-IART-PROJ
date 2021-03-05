@@ -13,3 +13,5 @@ Note that:
 ● You don’t need to scan all books from a library you describe.
 ● If a library signup process nishes aer D days, its description will be ignored.
 ● Books shipped aer D days will be ignored.
+
+Falta guardar os scanned books
