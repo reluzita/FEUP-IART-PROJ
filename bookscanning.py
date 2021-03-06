@@ -14,6 +14,11 @@ class Library:
         n_books = self.books_per_day * remaining
         ordered_books = sorted(self.books, key=lambda x: scores[x], reverse=True)
         return score(ordered_books[:n_books],scores)
+
+    def send_books(self, days, scores):
+        remaining = days - self.signup_days
+        n_books = self.books_per_day * remaining
+        self.scannedBooks = sorted(self.books, key=lambda x: scores[x], reverse=True)[:n_books]
     
     
 def score(books, scores):
@@ -104,6 +109,7 @@ def main(argv):
         id = choose_best_score(n_days - day, libraries, books)
         for lib in libraries:
             if lib.id == id:
+                lib.send_books(n_days - day, books)
                 libraries_list.append(lib)
                 day += lib.signup_days
                 libraries.remove(lib)
