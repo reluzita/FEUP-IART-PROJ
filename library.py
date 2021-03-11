@@ -1,5 +1,3 @@
-from funcs import score
-
 class Library:
     def __init__(self, id, books, signup_days, books_per_day):
         self.id = id
@@ -18,3 +16,5 @@ class Library:
         n_books = self.books_per_day * remaining
         self.scannedBooks = self.books[:n_books]
   
+    def __eq__(self, other):
+        return(self.__class__ == other.__class__ and self.id == other.id)

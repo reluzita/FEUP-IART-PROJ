@@ -1,8 +1,9 @@
 import sys
 import os
 from library import Library
+from utils import read_libraries
 
-def write_output(inputName, libraries):
+def write_output(inputName, libraries, books):
     outputName = "output/" + inputName
     file = open(outputName, "w")
 
@@ -10,8 +11,8 @@ def write_output(inputName, libraries):
     file.write(str(nLibraries) + "\n")
 
     for lib in libraries:
-        file.write(str(lib.id) + " " + str(len(lib.scannedBooks)) + "\n")
-        for book in lib.scannedBooks:
+        file.write(str(lib.id) + " " + str(len(books[lib.id])) + "\n")
+        for book in books[lib.id]:
             file.write(str(book) + " ")
         file.write("\n")        
 
@@ -50,11 +51,3 @@ def scan_file(file):
 
 
 
-def read_libraries(lines, n_libraries, scores):
-    libraries = []
-    for i in range(0, n_libraries):
-        info = lines[i*2].split()
-        books = sorted([int(n) for n in lines[i*2+1].split()], key=lambda x: scores[x], reverse=True)
-        libraries.append(Library(i, books, int(info[1]), int(info[2])))
-        
-    return libraries
