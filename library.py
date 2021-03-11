@@ -8,14 +8,13 @@ class Library:
         self.books_per_day = books_per_day
         self.scannedBooks = []
 
-    def get_score(self, days, scores):
+    def get_books(self, days):
         remaining = days - self.signup_days
         n_books = self.books_per_day * remaining
-        ordered_books = sorted(self.books, key=lambda x: scores[x], reverse=True)
-        return score(ordered_books[:n_books],scores)
+        return self.books[:n_books]
 
-    def send_books(self, days, scores):
+    def send_books(self, days):
         remaining = days - self.signup_days
         n_books = self.books_per_day * remaining
-        self.scannedBooks = sorted(self.books, key=lambda x: scores[x], reverse=True)[:n_books]
+        self.scannedBooks = self.books[:n_books]
   

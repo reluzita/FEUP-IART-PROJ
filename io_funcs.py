@@ -44,17 +44,17 @@ def scan_file(file):
         books[i] = int(scores[i])
     sections = lines[2:]
     
-    libraries = read_libraries(sections, n_libraries)
+    libraries = read_libraries(sections, n_libraries, books)
     
     return n_books, n_libraries, n_days, books, libraries
 
 
 
-def read_libraries(lines, n_libraries):
+def read_libraries(lines, n_libraries, scores):
     libraries = []
     for i in range(0, n_libraries):
         info = lines[i*2].split()
-        books = [int(n) for n in lines[i*2+1].split()]
+        books = sorted([int(n) for n in lines[i*2+1].split()], key=lambda x: scores[x], reverse=True)
         libraries.append(Library(i, books, int(info[1]), int(info[2])))
         
     return libraries
