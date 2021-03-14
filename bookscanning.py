@@ -1,6 +1,6 @@
 import sys
 from library import Library 
-from utils import find_best_neighbour, calculate_total_score, choose_best_score
+from utils import find_best_neighbour, calculate_total_score, choose_best_score, find_first_neighbour
 from io_funcs import scan_file, write_output
 import datetime
 import copy
@@ -25,6 +25,8 @@ def main(argv):
     while day < n_days and len(all_libraries)>0:
         id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
         #print(day, "-" , id)
+        if id == -1:
+            break
         for lib in all_libraries:
             if lib.id == id:
                 scanned_books_dict[lib.id] = lib.get_books(n_days-day)
@@ -36,7 +38,7 @@ def main(argv):
     print("all done, optimizing now!")
     found_better = True
     while found_better:
-        found_better, libraries_list, scanned_books_dict, total_score = find_best_neighbour(libraries_list, scanned_books_dict, libraries, scores, n_days)
+        found_better, libraries_list, scanned_books_dict, total_score = find_first_neighbour(libraries_list, scanned_books_dict, libraries, scores, n_days)
    
     
     elapsed_time = datetime.datetime.now() - t

@@ -7,8 +7,12 @@ def score(books, scores):
 def choose_best_score(days, libraries, scores, scanned_books):
     lib_scores = dict()
     for library in libraries:
+        if library.signup_days > days: continue
         books = [b for b in library.get_books(days) if b not in scanned_books]
         lib_scores[library.id] = score(books, scores)/library.signup_days
+    
+    if len(lib_scores) == 0:
+        return -1
     maximum = max(lib_scores.values())
 
     return list(lib_scores.keys())[list(lib_scores.values()).index(maximum)]
@@ -56,6 +60,8 @@ def find_best_neighbour(choosen_libraries, choosen_books, libraries, scores, n_d
         
         while day < n_days and len(all_libraries) > 0:
             id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+            if id == -1:
+                break
             for lib in all_libraries:
                 if lib.id == id:
                     scanned_books_dict[lib.id] = lib.get_books(n_days-day)
@@ -102,6 +108,8 @@ def find_first_neighbour(choosen_libraries, choosen_books, libraries, scores, n_
         
         while day < n_days and len(all_libraries) > 0:
             id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+            if id == -1:
+                break
             for lib in all_libraries:
                 if lib.id == id:
                     scanned_books_dict[lib.id] = lib.get_books(n_days-day)
