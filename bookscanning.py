@@ -1,9 +1,13 @@
 import sys
 from library import Library 
+from solution import Solution
 from utils import find_best_neighbour, calculate_total_score, choose_best_score, find_first_neighbour
 from io_funcs import scan_file, write_output
 import datetime
 import copy
+
+def getElapsedTime(t):
+    return datetime.datetime.now() - t
 
 def main(argv):
     if len(argv) != 1:
@@ -12,9 +16,9 @@ def main(argv):
     
     inputfile = argv[0]
         
-    n_books, n_libraries, n_days, scores, libraries = scan_file("input/" + inputfile)
+    n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
 
-    print("***", inputfile, "***")
+    print("\n***", inputfile, "***")
     t = datetime.datetime.now()
 
     day = 0
@@ -35,16 +39,18 @@ def main(argv):
                 day += lib.signup_days
                 all_libraries.remove(lib)
 
-    print("all done, optimizing now!")
+
+    print("\n--------------------------")
+    print("All done, optimizing now!")
+    print("-------------------------- ")
+
     found_better = True
     while found_better:
-        found_better, libraries_list, scanned_books_dict, total_score = find_first_neighbour(libraries_list, scanned_books_dict, libraries, scores, n_days)
+        found_better, libraries_list, scanned_books_dict, total_score = find_best_neighbour(libraries_list, scanned_books_dict, libraries, scores, n_days)
    
-    
-    elapsed_time = datetime.datetime.now() - t
-    print("Elapsed Time:", elapsed_time.total_seconds())
+
     total_score = calculate_total_score(scanned_books_dict, scores) 
-    print("Total score: ", total_score)
+    solution = Solution(libraries_list, total_score,  getElapsedTime(t).total_seconds(), printLibraries) #prints the solution
 
     write_output(inputfile, libraries_list, scanned_books_dict)
 

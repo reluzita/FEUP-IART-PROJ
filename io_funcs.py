@@ -3,6 +3,8 @@ import os
 from library import Library
 from utils import read_libraries
 
+
+
 def write_output(inputName, libraries, books):
     outputName = "output/" + inputName
     file = open(outputName, "w")
@@ -17,9 +19,12 @@ def write_output(inputName, libraries, books):
         file.write("\n")        
 
     file.close()
+    
 
 
 def scan_file(file):
+    if file == "input/a_example.txt": printLibraries = False
+    else: printLibraries = True
     if os.stat(file).st_size == 0:
         print("File is empty!")
         sys.exit()
@@ -47,7 +52,7 @@ def scan_file(file):
     
     libraries = read_libraries(sections, n_libraries, books)
     
-    return n_books, n_libraries, n_days, books, libraries
+    return n_books, n_libraries, n_days, books, libraries, printLibraries
 
 
 

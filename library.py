@@ -6,6 +6,9 @@ class Library:
         self.books_per_day = books_per_day
         self.scannedBooks = []
 
+    def __str__(self):
+        return str(self.id)
+
     def get_books(self, days):
         remaining = days - self.signup_days
         n_books = self.books_per_day * remaining
