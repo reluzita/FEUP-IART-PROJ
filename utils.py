@@ -1,5 +1,6 @@
 from library import Library
 import copy
+from solution import Solution
 
 def score(books, scores):
     return sum([scores[b] for b in books])
@@ -130,3 +131,22 @@ def find_first_neighbour(choosen_libraries, choosen_books, libraries, scores, n_
             print("not better :(")
 
     return found_better, best_libraries, best_books, best_score
+
+def greedy(libraries, n_days, scores):
+    day = 0
+    solution = [-1 for i in range(n_days)]
+    scanned_books_set = set()
+    scanned_books_dict = dict()
+    all_libraries = copy.deepcopy(libraries)
+
+    while day < n_days and len(all_libraries)>0:
+        lib_id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+        lib = libraries[lib_id]
+        scanned_books_dict[lib_id] = lib.get_books(n_days-day)
+        scanned_books_set.update(scanned_books_dict[lib_id])
+        for _ in range(lib.signup_days):
+            solution[day] = lib_id
+            day += 1
+        all_libraries.remove(lib)
+
+    return Solution(solution, score(scanned_books_set, scores), scanned_books_dict)
