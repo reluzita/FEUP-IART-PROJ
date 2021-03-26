@@ -73,7 +73,7 @@ def calculate_solution_score(sol, libraries, scores):
         day+=lib.signup_days
     return score(books, scores)
 
-def genetic_algorithm(population, libraries, scores):
+def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob):
     new_population = []
     for _ in range(len(population)):
         parent1, parent2 = tournament(population, 3)
@@ -85,7 +85,10 @@ def genetic_algorithm(population, libraries, scores):
     
     total_population = copy.deepcopy(new_population)
     total_population.extend(population)
-    return sorted(total_population, key=lambda x:x.score, reverse=True)[:50]
+
+    mutate(total_population, libraries, mutation_prob, swap_prob)
+
+    return sorted(total_population, key=lambda x:x.score, reverse=True)[:len(population)]
 
 def generate_random(n_days, libraries, scores):
     not_used = [i for i in range(len(libraries))]
@@ -113,3 +116,55 @@ def generate_random(n_days, libraries, scores):
         books.update(lib.get_books(n_days - day))
         day += lib.signup_days
     return Solution(sol, score(books, scores), 0)
+
+def mutate(population, libraries, mutation_prob, swap_prob):
+    for solution in population:
+        if random() < mutation_prob:
+            uniques = set(solution.sol)
+            old_lib_id = random.choice(uniques)
+            old_lib = libraries[old_lib_id]
+
+            day = solution.sol.index(old_lib_id)
+
+            first_part = solution.sol[:day]
+            second_part = list(filter(lambda a: a != -1, solution.sol[day + old_lib.signup_days:]))
+            remaining_days = len(solution.sol) - (len(first_part) + len(second_part))
+
+            not_used = [lib for lib in libraries if lib.id not in solution.sol and lib.signup_days < remaining_days]
+            new_solution = first_part
+            if len(not_used) > 0:
+                new_lib = random.choice(not_used)
+                        
+                for _ in range(new_lib.signup_days):
+                    new_solution.append(new_lib.id)
+                            
+            new_solution.extend(second_part)
+
+            while(len(new_solution) < len(solution)):
+                new_solution.append(-1)
+            
+            solution.sol = copy.deepcopy(new_solution)
+        if random() < swap_prob:
+            uniques = set(solution.sol)
+            [lib1, lib2] = random.sample(uniques, 2)
+            day1 = solution.sol.index(lib1)
+            day2 = solution.sol.index(lib2)
+            while day1 > day2:
+                [lib1, lib2] = random.sample(uniques, 2)
+                day1 = solution.sol.index(lib1)
+                day2 = solution.sol.index(lib2)
+
+            signup1 = libraries[lib1].signup_days
+            signup2 = libraries[lib2].signup_days
+
+            new_solution = solution.sol[:day1]
+            new_solution.extend([lib2 for d in range(signup2)])
+            new_solution.extend(solution.sol[day1+signup1:day2])
+            new_solution.extend([lib1 for d in range(signup1)])
+            new_solution.extend(solution.sol[day2+signup2:])
+
+            solution.sol = copy.deepcopy(new_solution)
+
+
+
+                

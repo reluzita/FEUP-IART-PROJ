@@ -10,7 +10,7 @@ from genetic_algorithm import genetic_algorithm, generate_random
 
 if __name__ == "__main__":
     if len(sys.argv[1:]) != 1:
-        print("Usage: bookscanning.py <inputfile>")
+        print("Usage: testing.py <inputfile>")
         sys.exit()
     
     inputfile = sys.argv[1]
@@ -18,6 +18,8 @@ if __name__ == "__main__":
     n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
     population_size = 50
     generations = 1000
+    mutation_prob = 0.05
+    swap_prob = 0.05
 
 
     print("\n***", inputfile, "***")
@@ -29,7 +31,7 @@ if __name__ == "__main__":
         population.append(generate_random(n_days, libraries, scores))
 
     for i in range(generations):
-        new_population = genetic_algorithm(population, libraries, scores)
+        new_population = genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob)
         population = []
         for s in new_population:
             if s in population:

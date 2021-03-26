@@ -13,8 +13,8 @@ def write_output(inputName, libraries, books):
     file.write(str(nLibraries) + "\n")
 
     for lib in libraries:
-        file.write(str(lib.id) + " " + str(len(books[lib.id])) + "\n")
-        for book in books[lib.id]:
+        file.write(str(lib) + " " + str(len(books[lib])) + "\n")
+        for book in books[lib]:
             file.write(str(book) + " ")
         file.write("\n")        
 
