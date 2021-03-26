@@ -9,12 +9,12 @@ import copy
 def getElapsedTime(t):
     return datetime.datetime.now() - t
 
-def main(argv):
-    if len(argv) != 1:
-        print("Usage: bookscanning.py <inputfile>")
-        sys.exit()
+def bookScanning(inputfile):
+    # if len(argv) != 1:
+    #     print("Usage: bookscanning.py <inputfile>")
+    #     sys.exit()
     
-    inputfile = argv[0]
+    #inputfile = argv[0]
         
     n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
 
@@ -54,6 +54,3 @@ def main(argv):
 
     write_output(inputfile, libraries_list, scanned_books_dict)
 
-# List of arguments contains file.py
-if __name__ == "__main__":
-    main(sys.argv[1:])
