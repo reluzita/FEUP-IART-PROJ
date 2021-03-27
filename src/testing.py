@@ -8,12 +8,7 @@ import copy
 import random
 from genetic_algorithm import genetic_algorithm, mutate_solution, generate_random
 
-if __name__ == "__main__":
-    if len(sys.argv[1:]) != 1:
-        print("Usage: testing.py <inputfile>")
-        sys.exit()
-    
-    inputfile = sys.argv[1]
+def genetic(inputfile):
         
     n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
     population_size = 10
