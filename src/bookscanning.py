@@ -25,23 +25,19 @@ def bookScanning(inputfile):
     print("Greedy is done, optimizing now!")
     print("-------------------------- ")
 
-    # while found_better: #implementing the decided local search variation
-    #     found_better, solution = random_walk(solution, n_days)
+    found_better = True
+    while found_better: #implementing the decided local search variation
+        found_better, solution = find_best_neighbour(solution, libraries, scores, n_days)
 
-    best_solution = solution
-
-    for _ in range(1000):
-        solution = random_walk(solution, libraries, scores, n_days)
-        if solution.score > best_solution.score:
-            best_solution = solution
-        print(solution.score)
+    # for _ in range(1000):
+    #     solution = random_walk(solution, libraries, scores, n_days)
+    #     if solution.score > best_solution.score:
+    #         best_solution = solution
+    #     print(solution.score)
     
-       
-
-
     libraries_list = []
-    for lib in best_solution.sol:
+    for lib in solution.sol:
         if lib.id not in libraries_list and lib != -1:
             libraries_list.append(lib.id)
-    write_output(inputfile, libraries_list, best_solution.books2lib)
+    write_output(inputfile, libraries_list, solution.books2lib)
 
