@@ -1,6 +1,6 @@
 import sys
 from bookscanning import bookScanning
-
+from testing import genetic
 def choice_input(min, max):
     user_in = input("Insert a number from the menu: ")
     while(True):
@@ -27,16 +27,20 @@ def file_menu():
     return files[choice]
 
 def algorithm_menu():
-    print("****************************")
+    algorithms = {"1": "Greedy", "2": "Local search - first neighbour", "3": "Local search - best neighbour", "4": "Local search - random walk", "5": "Genetic"}
+    print("\n\n****************************")
     print("Choose the algorithm to apply: \n")
-    print("1. greedy")
-    print("2. local search - first neighbour")
-    print("3. local search - best neighbour")
-    print("*****************************")
-    choice = choice_input
+    for key,value in algorithms.items():
+        print(key + ". " + value)
+    print("\n*****************************")
+    choice = choice_input(1,5)
+
+    return choice
 
 
 # List of arguments contains file.py
 if __name__ == "__main__":
     file = file_menu()
-    bookScanning(file)
+    algorithm = algorithm_menu()
+    if algorithm >= 1 and algorithm <= 4: bookScanning(file, algorithm)
+    else:  genetic(file)
