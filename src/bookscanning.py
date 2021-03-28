@@ -15,7 +15,7 @@ def bookScanning(inputfile, algorithm):
 
     print("\n***", inputfile, "***")
 
-    # t = datetime.datetime.now()
+    t = datetime.datetime.now()
 
     all_libraries = copy.deepcopy(libraries)
 
@@ -51,6 +51,10 @@ def bookScanning(inputfile, algorithm):
     for lib in best_solution.sol:
         if lib not in libraries_list and lib != -1:
             libraries_list.append(lib)
+    
+    elapsed_time = datetime.datetime.now() - t
+    print("Elapsed time: " + str(elapsed_time))
     print(best_solution.score)
+
     write_output(inputfile, libraries_list, best_solution.books2lib)
 

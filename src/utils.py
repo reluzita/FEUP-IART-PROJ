@@ -49,14 +49,22 @@ def find_best_neighbour(solution, libraries, scores, n_days):
         scanned_books_set = set()
         all_libraries = copy.deepcopy(libraries)
         for lib in solution.sol:
-            if lib == current_lib:
-                all_libraries.remove(libraries[lib])
+            if lib == -1: 
+                break
+            elif lib == current_lib:
+                try:
+                    all_libraries.remove(libraries[lib])
+                except ValueError:
+                    pass
                 break
             else:
                 new_list.append(libraries[lib])
                 scanned_books_dict[lib] = libraries[lib].get_books(n_days-day)
                 scanned_books_set.update(scanned_books_dict[lib])
-                all_libraries.remove(libraries[lib])
+                try:
+                    all_libraries.remove(libraries[lib])
+                except ValueError:
+                    pass
                 day += libraries[lib].signup_days
 
         
@@ -99,14 +107,23 @@ def find_first_neighbour(solution, libraries, scores, n_days):
         all_libraries = copy.deepcopy(libraries)
 
         for lib in solution.sol:
-            if lib == current_lib:
-                all_libraries.remove(libraries[lib])
+            if lib == -1: 
+                break
+            elif lib == current_lib:
+                try:
+                    all_libraries.remove(libraries[lib])
+                except ValueError:
+                    pass
                 break
             else:
                 new_list.append(lib)
                 scanned_books_dict[lib] = libraries[lib].get_books(n_days-day)
                 scanned_books_set.update(scanned_books_dict[lib])
-                all_libraries.remove(libraries[lib])
+                try:
+                    all_libraries.remove(libraries[lib])
+                except ValueError:
+                    pass
+                break
                 day += libraries[lib].signup_days
 
         
@@ -196,3 +213,7 @@ def greedy(libraries, n_days, scores):
         all_libraries.remove(lib)
 
     return Solution(solution, score(scanned_books_set, scores), scanned_books_dict)
+
+
+# T/(1+t) , funçao de cooling t é a iteraçao , funçao probabilidade do enunciado T = 100 inicial
+# TabuSearch simulated annealing 
