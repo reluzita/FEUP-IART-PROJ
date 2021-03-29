@@ -21,7 +21,6 @@ def bookScanning(inputfile, algorithm):
     all_libraries = copy.deepcopy(libraries)
 
     solution = greedy(all_libraries, n_days, scores)
-    best_solution = solution
 
     if algorithm != 1:
         print("\n--------------------------")
@@ -41,30 +40,24 @@ def bookScanning(inputfile, algorithm):
         
         if algorithm == 4:
             for _ in range(1000):
-                solution = random_walk(solution, libraries, scores, n_days)
-                if solution.score > best_solution.score:
-                    best_solution = solution
+                new_solution = random_walk(solution, libraries, scores, n_days)
+                if new_solution.score > solution.score:
+                    solution = new_solution
                 print(solution.score)
     
 
-
-    libraries_list = []
-    for lib in best_solution.sol:
-        if lib not in libraries_list and lib != -1:
-            libraries_list.append(lib)
-    
     elapsed_time = datetime.datetime.now() - t
     print("Elapsed time: " + str(elapsed_time))
-    print(best_solution.score)
+    print(solution.score)
 
-    write_output(inputfile, libraries_list, best_solution.books2lib)
+    write_output(inputfile, solution)
 
 def genetic(inputfile):
     n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
-    population_size = 20
-    generations = 10
-    mutation_prob = 0.1
-    swap_prob = 0.1
+    population_size = 50
+    generations = 100
+    mutation_prob = 0.2
+    swap_prob = 0.2
 
 
     print("\n***", inputfile, "***")
@@ -75,7 +68,7 @@ def genetic(inputfile):
     population = [greedy_solution]
     #population = []
     for i in range(population_size-1):
-        new_solution = mutate_solution(greedy_solution.sol, libraries, 0.1)
+        new_solution = mutate_solution(greedy_solution.libraries_list, libraries, 0.2)
         population.append(generate_solution(new_solution, libraries, scores))
 
     print("population done")
@@ -85,7 +78,7 @@ def genetic(inputfile):
         for s in new_population:
             if s in population:
                 best = sorted(new_population, key=lambda x: x.score, reverse=True)[0]
-                new_solution = mutate_solution(best.sol, libraries, 0.1)
+                new_solution = mutate_solution(best.libraries_list, libraries, 0.1)
                 population.append(generate_solution(new_solution, libraries, scores))
             else:
                 population.append(s)
@@ -99,10 +92,5 @@ def genetic(inputfile):
     print("Elapsed time: " + str(elapsed_time))
 
     best = sorted(population, key=lambda x: x.score, reverse=True)[0]
-    libraries_list = []
-    for lib in best.sol:
-        if lib not in libraries_list and lib != -1:
-            libraries_list.append(lib)
-
-    write_output(inputfile, libraries_list, best.books2lib)
+    write_output(inputfile, best)
 

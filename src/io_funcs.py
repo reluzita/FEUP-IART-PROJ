@@ -5,16 +5,21 @@ from utils import read_libraries
 
 
 
-def write_output(inputName, libraries, books):
+def write_output(inputName, solution):
     outputName = "output/" + inputName
     file = open(outputName, "w")
+
+    libraries = []
+    for lib in solution.libraries_list:
+        if lib not in libraries and lib != -1:
+            libraries.append(lib)
 
     nLibraries = len(libraries)
     file.write(str(nLibraries) + "\n")
 
     for lib in libraries:
-        file.write(str(lib) + " " + str(len(books[lib])) + "\n")
-        for book in books[lib]:
+        file.write(str(lib) + " " + str(len(solution.books2lib[lib])) + "\n")
+        for book in solution.books2lib[lib]:
             file.write(str(book) + " ")
         file.write("\n")        
 

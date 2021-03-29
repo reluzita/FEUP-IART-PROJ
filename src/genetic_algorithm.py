@@ -14,23 +14,23 @@ def tournament(population, np):
     return parent1, parent2
 
 def reproduce(p1, p2, libraries):
-    total_days = len(p1.sol)
+    total_days = len(p1)
     crossoverpoints = []
     for i in range(total_days-1):
-        if p1.sol[i] != p1.sol[i+1] and p2.sol[i] != p2.sol[i+1]:
+        if p1[i] != p1[i+1] and p2[i] != p2[i+1]:
             crossoverpoints.append(i+1)
     if len(crossoverpoints) == 0: 
         return -1
     point = random.choice(crossoverpoints)
 
-    lib1 = set(p1.sol[:point])
-    lib2 = set(p2.sol[point:])
+    lib1 = set(p1[:point])
+    lib2 = set(p2[point:])
 
     duplicates = [x for x in lib2 if x in lib1]
 
-    part2 = remove_duplicates(p2.sol[point:], duplicates, libraries)
+    part2 = remove_duplicates(p2[point:], duplicates, libraries)
 
-    child = p1.sol[:point]
+    child = p1[:point]
     child.extend(part2)
 
     return child
@@ -77,12 +77,11 @@ def calculate_solution_score(sol, libraries, scores):
 def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob):
     new_population = []
     for _ in range(len(population)):
-        
         parent1, parent2 = tournament(population, 3)
-        child = reproduce(parent1, parent2, libraries)
+        child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
         while child == -1:
             parent1, parent2 = tournament(population, 3)
-            child = reproduce(parent1, parent2, libraries)
+            child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
         new_population.append(generate_solution(child, libraries, scores))
     
     total_population = copy.deepcopy(new_population)
@@ -94,7 +93,8 @@ def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob):
 
 def generate_random(n_days, libraries, scores):
     not_used = [i for i in range(len(libraries))]
-    sol = [-1 for j in range(n_days)]
+    libraries_list = [-1 for j in range(n_days)]
+
     day = 0
     while day < n_days:
         if len(not_used) == 0: break
@@ -106,37 +106,21 @@ def generate_random(n_days, libraries, scores):
             lib = libraries[lib_id]
         if len(not_used) == 1: break
         for _ in range(lib.signup_days):
-            sol[day] = lib_id
+            libraries_list[day] = lib_id
             day+=1
         not_used.remove(lib_id)
-    #calcular score
-    books = set()
-    day = 0
-    while day < n_days:
-        if sol[day] == -1: break
-        lib = libraries[sol[day]]
-        books.update(lib.get_books(n_days - day))
-        day += lib.signup_days
-    return generate_solution(sol, libraries, scores)
+    
+    return generate_solution(libraries_list, libraries, scores)
 
 def mutate_population(population, libraries, scores, mutation_prob, swap_prob):
     for solution in population:
         lib_list = None
         if random.random() < mutation_prob:
-            lib_list = mutate_solution(solution.sol, libraries, 0.1)
+            lib_list = mutate_solution(solution.libraries_list, libraries, 0.05)
         if random.random() < swap_prob:
-            lib_list = swap_mutation(solution.sol, libraries)
+            lib_list = swap_mutation(solution.libraries_list, libraries)
         if lib_list != None:
-            day = 0 
-            n_days = len(lib_list)
-            books2lib = dict()
-            books = set()
-            while day < n_days:
-                lib = lib_list[day]
-                books2lib[lib] = libraries[lib].get_books(n_days - day)
-                books.update(books2lib[lib])
-                day += libraries[lib].signup_days
-            solution = Solution(lib_list, score(books, scores), books2lib)
+            solution = generate_solution(lib_list, libraries, scores)
 
 def mutate_solution(solution, libraries, mutation_no):
     uniques = set(solution)

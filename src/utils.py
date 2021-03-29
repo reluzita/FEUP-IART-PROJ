@@ -23,9 +23,11 @@ def score(books, scores):
 
 def choose_best_score(days, libraries, scores, scanned_books):
     lib_scores = dict()
+    books2lib = dict()
     for library in libraries:
         if library.signup_days > days: continue
         books = [b for b in library.get_books(days) if b not in scanned_books]
+        books2lib[library.id] = books
         lib_scores[library.id] = score(books, scores)/library.signup_days
     
     if len(lib_scores) == 0:
@@ -53,7 +55,7 @@ def calculate_total_score(books_dict, scores):
 
 def find_best_neighbour(solution, libraries, scores, n_days):
     best_score = calculate_total_score(solution.books2lib, scores) 
-    best_libraries = copy.deepcopy(solution.sol)
+    best_libraries = copy.deepcopy(solution.libraries_list)
     best_books = copy.deepcopy(solution.books2lib)
     found_better = False
 
@@ -63,7 +65,7 @@ def find_best_neighbour(solution, libraries, scores, n_days):
         scanned_books_dict = dict()
         scanned_books_set = set()
         all_libraries = copy.deepcopy(libraries)
-        for lib in solution.sol:
+        for lib in solution.libraries_list:
             if lib == -1: 
                 break
             elif lib == current_lib:
@@ -109,19 +111,19 @@ def find_best_neighbour(solution, libraries, scores, n_days):
 
 def find_first_neighbour(solution, libraries, scores, n_days):
     best_score = calculate_total_score(solution.books2lib, scores) 
-    best_libraries = copy.deepcopy(solution.sol)
+    best_libraries = copy.deepcopy(solution.libraries_list)
     best_books = copy.deepcopy(solution.books2lib)
     found_better = False
    
 
-    for current_lib in solution.sol:
+    for current_lib in solution.libraries_list:
         day = 0
         new_list = []
         scanned_books_dict = dict()
         scanned_books_set = set()
         all_libraries = copy.deepcopy(libraries)
 
-        for lib in solution.sol:
+        for lib in solution.libraries_list:
             if lib == -1: 
                 break
             elif lib == current_lib:
@@ -171,7 +173,7 @@ def random_descendent(choosen_libraries, choosen_books, libraries, scores, n_day
     return True
 
 def random_walk(solution, libraries, scores, n_days):
-    uniques = set(solution.sol)
+    uniques = set(solution.libraries_list)
     current_lib = random.choice(list(uniques))
     day = 0
     
@@ -180,10 +182,10 @@ def random_walk(solution, libraries, scores, n_days):
     all_libraries = copy.deepcopy(libraries)
     all_libraries.remove(libraries[current_lib])
 
-    new_day = solution.sol.index(current_lib)
-    new_list = solution.sol[:new_day]
+    new_day = solution.libraries_list.index(current_lib)
+    new_list = solution.libraries_list[:new_day]
     while day < new_day:
-        lib = libraries[solution.sol[day]]
+        lib = libraries[solution.libraries_list[day]]
         scanned_books_dict[lib.id] = lib.get_books(n_days-day)
         scanned_books_set.update(scanned_books_dict[lib.id])
         all_libraries.remove(lib)
