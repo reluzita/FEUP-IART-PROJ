@@ -50,3 +50,6 @@ def genetic(inputfile):
         mean = sum([x.score for x in population])/len(population)
         #print(i, "-", mean)
         print(i, "-", best.score)
+
+    elapsed_time = datetime.datetime.now() - t
+    print("Elapsed time: " + str(elapsed_time))
