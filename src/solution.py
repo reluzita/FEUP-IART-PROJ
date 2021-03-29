@@ -1,7 +1,7 @@
 import functools
 
 class Solution:
-    def __init__(self, sol, score, books2lib):
+    def __init__(self, sol, score:int, books2lib:dict):
         self.sol = sol #list of libraries
         self.score = score # final score
         self.books2lib = books2lib
@@ -21,4 +21,7 @@ class Solution:
 
     def __eq__(self, obj):
         return self.score == obj.score and functools.reduce(lambda x, y : x and y, map(lambda p, q: p == q,self.sol,obj.sol), True)
+
+    def __str__(self):
+        return self.books2lib
            

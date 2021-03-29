@@ -1,6 +1,6 @@
 import sys
-from bookscanning import bookScanning
-from testing import genetic
+from bookscanning import bookScanning, genetic
+
 def choice_input(min, max):
     user_in = input("Insert a number from the menu: ")
     while(True):
@@ -17,7 +17,7 @@ def choice_input(min, max):
 
 
 def file_menu():
-    files = { "1" :"a_example.txt", "2": "b_read_on.txt", "3":"c_incunabula.txt", "4":"d_tough_choices.txt", "5":"e_so_many_books.txt", "6":"f_libraries_of_the_world"}
+    files = { "1" :"a_example.txt", "2": "b_read_on.txt", "3":"c_incunabula.txt", "4":"d_tough_choices.txt", "5":"e_so_many_books.txt", "6":"f_libraries_of_the_world.txt"}
     print("****************************")
     print("Choose the input file: \n")
     for key,value in files.items():

@@ -1,5 +1,5 @@
 import random
-from utils import score
+from utils import score, generate_solution
 from solution import Solution
 import copy
 from math import ceil
@@ -77,12 +77,13 @@ def calculate_solution_score(sol, libraries, scores):
 def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob):
     new_population = []
     for _ in range(len(population)):
+        
         parent1, parent2 = tournament(population, 3)
         child = reproduce(parent1, parent2, libraries)
         while child == -1:
             parent1, parent2 = tournament(population, 3)
             child = reproduce(parent1, parent2, libraries)
-        new_population.append(Solution(child, calculate_solution_score(child, libraries, scores), 0))
+        new_population.append(generate_solution(child, libraries, scores))
     
     total_population = copy.deepcopy(new_population)
     total_population.extend(population)
@@ -116,7 +117,7 @@ def generate_random(n_days, libraries, scores):
         lib = libraries[sol[day]]
         books.update(lib.get_books(n_days - day))
         day += lib.signup_days
-    return Solution(sol, score(books, scores), 0)
+    return generate_solution(sol, libraries, scores)
 
 def mutate_population(population, libraries, scores, mutation_prob, swap_prob):
     for solution in population:
@@ -134,11 +135,12 @@ def mutate_population(population, libraries, scores, mutation_prob, swap_prob):
                 lib = lib_list[day]
                 books2lib[lib] = libraries[lib].get_books(n_days - day)
                 books.update(books2lib[lib])
+                day += libraries[lib].signup_days
             solution = Solution(lib_list, score(books, scores), books2lib)
 
 def mutate_solution(solution, libraries, mutation_no):
     uniques = set(solution)
-    old_lib_ids = random.sample(list(uniques), ceil(mutation_no*len(solution)))
+    old_lib_ids = random.sample(list(uniques), ceil(mutation_no*len(uniques)))
 
     new_solution = copy.deepcopy(solution)
     for i in old_lib_ids:

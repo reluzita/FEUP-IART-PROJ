@@ -3,6 +3,21 @@ import copy
 from solution import Solution
 import random
 
+def generate_solution(libraries_list, libraries, scores):
+    day = 0 
+    n_days = len(libraries_list)
+    books2lib = dict()
+    books = set()
+    while day < n_days:
+        lib = libraries_list[day]
+        if lib == -1:
+            break
+        books2lib[lib] = libraries[lib].get_books(n_days - day)
+        books.update(books2lib[lib])
+        day += libraries[lib].signup_days
+
+    return Solution(libraries_list, score(books, scores), books2lib)
+
 def score(books, scores):
     return sum([scores[b] for b in books])
 
