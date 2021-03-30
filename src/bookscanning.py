@@ -1,7 +1,7 @@
 import sys
 from library import Library 
 from solution import Solution
-from utils import find_best_neighbour, choose_best_score, find_first_neighbour, random_walk, score, generate_solution
+from utils import find_best_neighbour, choose_best_score, find_first_neighbour, random_walk, score, generate_solution, simulated_annealing
 from io_funcs import scan_file, write_output
 import datetime
 import copy
@@ -45,6 +45,11 @@ def bookScanning(inputfile, algorithm):
                     solution = new_solution
                 print(solution.score)
     
+        if algorithm == 5:
+            print(n_days)
+            solution = simulated_annealing(solution, libraries, scores, n_days)
+
+
 
     elapsed_time = datetime.datetime.now() - t
     print("Elapsed time: " + str(elapsed_time))

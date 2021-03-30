@@ -147,8 +147,55 @@ def find_first_neighbour(solution, libraries, scores, n_days):
 
     return False, solution
 
-def random_descendent(choosen_libraries, choosen_books, libraries, scores, n_days):
-    return True
+def choose_random_neighbour(libraries, n_days):
+    n = len(libraries)
+    tries = 0
+
+    while(tries < 100000):
+        rand = random.randrange(0, n-1)
+    
+        if libraries[rand].signup_days < n_days:
+            return rand
+    return 0
+
+
+def random_descendent(solution, libraries, scores, n_days):
+    current_lib = choose_random_neighbour(libraries, n_days)
+    day = 0
+    new_list = []
+    scanned_books_dict = dict()
+    scanned_books_set = set()
+    all_libraries = copy.deepcopy(libraries)
+
+    for lib in solution.libraries_list:
+        if lib == -1: 
+            break
+        elif lib == current_lib:
+            all_libraries.remove(libraries[lib])
+            break
+        else:
+            scanned_books_dict[lib] = solution.books2lib[lib]
+            scanned_books_set.update(scanned_books_dict[lib])
+            for _ in range(libraries[lib].signup_days):
+                new_list.append(lib)
+                day += 1
+            all_libraries.remove(libraries[lib])
+
+    while day < n_days and len(all_libraries) > 0:
+        lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+        if lib_id == -1:
+            break
+        
+        scanned_books_dict[lib_id] = books
+        scanned_books_set.update(books)
+        for _ in range(libraries[lib_id].signup_days):
+            new_list.append(lib_id)
+            day += 1
+        all_libraries.remove(libraries[lib_id])
+
+    new_score = score(scanned_books_set, scores)
+
+    return Solution(new_list, new_score, scanned_books_dict)
 
 def random_walk(solution, libraries, scores, n_days):
     uniques = set(solution.libraries_list)
@@ -210,3 +257,30 @@ def greedy(libraries, n_days, scores):
 
 # T/(1+t) , funçao de cooling t é a iteraçao , funçao probabilidade do enunciado T = 100 inicial
 # TabuSearch simulated annealing 
+ 
+def cooling_function(t):    
+    temp = 100
+    return temp / (1 + t.total_seconds())
+ 
+def accept_with_probability(delta, t):
+    r = random.randrange(0,1)
+    f = math.exp( delta / t)
+    if f >= r: 
+        return True
+    else: return False
+
+
+
+def simulated_annealing(solution, libraries, scores, n_days):
+    for t in range(300):
+        new_solution = random_descendent(solution, libraries, scores, n_days)
+
+        t = cooling_function(time)
+        delta = new_solution.score - best_score
+ 
+        if delta <= 0 and not accept_with_probability(delta, t): continue
+        else:
+            last_score = new_score
+            solution = new_solution
+ 
+    return solution

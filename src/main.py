@@ -27,13 +27,13 @@ def file_menu():
     return files[choice]
 
 def algorithm_menu():
-    algorithms = {"1": "Greedy", "2": "Local search - first neighbour", "3": "Local search - best neighbour", "4": "Local search - random walk", "5": "Genetic"}
+    algorithms = {"1": "Greedy", "2": "Local search - first neighbour", "3": "Local search - best neighbour", "4": "Local search - random walk", "5":"Simulated Annealing", "6": "Genetic"}
     print("\n\n****************************")
     print("Choose the algorithm to apply: \n")
     for key,value in algorithms.items():
         print(key + ". " + value)
     print("\n*****************************")
-    choice = choice_input(1,5)
+    choice = choice_input(1,6)
 
     return choice
 
@@ -42,5 +42,6 @@ def algorithm_menu():
 if __name__ == "__main__":
     file = file_menu()
     algorithm = algorithm_menu()
-    if algorithm >= 1 and algorithm <= 4: bookScanning(file, algorithm)
+    if algorithm >= 1 and algorithm <= 5: bookScanning(file, algorithm)
     else:  genetic(file)
+    
