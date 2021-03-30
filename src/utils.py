@@ -22,19 +22,22 @@ def score(books, scores):
     return sum([scores[b] for b in books])
 
 def choose_best_score(days, libraries, scores, scanned_books):
-    lib_scores = dict()
-    books2lib = dict()
+    best_score = 0
+    best_books = []
+    best_lib = None
     for library in libraries:
         if library.signup_days > days: continue
         books = [b for b in library.get_books(days) if b not in scanned_books]
-        books2lib[library.id] = books
-        lib_scores[library.id] = score(books, scores)/library.signup_days
+        s = score(books, scores) /library.signup_days
+        if s > best_score:
+            best_lib = library.id
+            best_score = s
+            best_books = books 
     
-    if len(lib_scores) == 0:
-        return -1
-    maximum = max(lib_scores.values())
+    if best_lib == None:
+        return -1, best_books
 
-    return list(lib_scores.keys())[list(lib_scores.values()).index(maximum)]
+    return best_lib, best_books
 
 
 def read_libraries(lines, n_libraries, scores):
@@ -46,15 +49,8 @@ def read_libraries(lines, n_libraries, scores):
         
     return libraries
 
-def calculate_total_score(books_dict, scores):
-    all_books = set()
-    for id in books_dict:
-        all_books.update(books_dict[id])
-    return score(list(all_books), scores)
-
-
 def find_best_neighbour(solution, libraries, scores, n_days):
-    best_score = calculate_total_score(solution.books2lib, scores) 
+    best_score = solution.score
     best_libraries = copy.deepcopy(solution.libraries_list)
     best_books = copy.deepcopy(solution.books2lib)
     found_better = False
@@ -86,18 +82,17 @@ def find_best_neighbour(solution, libraries, scores, n_days):
 
         
         while day < n_days and len(all_libraries) > 0:
-            id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
-            if id == -1:
+            lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+            if lib_id == -1:
                 break
-            for lib in all_libraries:
-                if lib.id == id:
-                    scanned_books_dict[lib.id] = lib.get_books(n_days-day)
-                    scanned_books_set.update(scanned_books_dict[lib.id])
-                    new_list.append(lib)
-                    day += lib.signup_days
-                    all_libraries.remove(lib)
+            
+            scanned_books_dict[lib_id] = books
+            scanned_books_set.update(books)
+            new_list.append(libraries[lib_id])
+            day += libraries[lib_id].signup_days
+            all_libraries.remove(libraries[lib_id])
 
-        new_score = calculate_total_score(scanned_books_dict, scores)
+        new_score = score(scanned_books_set, scores)
         if new_score > best_score:
             found_better = True
             best_libraries = copy.deepcopy(new_list)
@@ -110,12 +105,6 @@ def find_best_neighbour(solution, libraries, scores, n_days):
     return found_better, Solution(best_libraries, best_score, best_books)
 
 def find_first_neighbour(solution, libraries, scores, n_days):
-    best_score = calculate_total_score(solution.books2lib, scores) 
-    best_libraries = copy.deepcopy(solution.libraries_list)
-    best_books = copy.deepcopy(solution.books2lib)
-    found_better = False
-   
-
     for current_lib in solution.libraries_list:
         day = 0
         new_list = []
@@ -127,47 +116,36 @@ def find_first_neighbour(solution, libraries, scores, n_days):
             if lib == -1: 
                 break
             elif lib == current_lib:
-                try:
-                    all_libraries.remove(libraries[lib])
-                except ValueError:
-                    pass
+                all_libraries.remove(libraries[lib])
                 break
             else:
-                new_list.append(lib)
-                scanned_books_dict[lib] = libraries[lib].get_books(n_days-day)
+                scanned_books_dict[lib] = solution.books2lib[lib]
                 scanned_books_set.update(scanned_books_dict[lib])
-                try:
-                    all_libraries.remove(libraries[lib])
-                except ValueError:
-                    pass
-                break
-                day += libraries[lib].signup_days
-
-        
-        while day < n_days and len(all_libraries) > 0:
-            id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
-            if id == -1:
-                break
-            for lib in all_libraries:
-                if lib.id == id:
-                    scanned_books_dict[lib.id] = lib.get_books(n_days-day)
-                    scanned_books_set.update(scanned_books_dict[lib.id])
+                for _ in range(libraries[lib].signup_days):
                     new_list.append(lib)
-                    day += lib.signup_days
-                    all_libraries.remove(lib)
+                    day += 1
+                all_libraries.remove(libraries[lib])
 
-        new_score = calculate_total_score(scanned_books_dict, scores)
-        if new_score > best_score:
-            found_better = True
-            best_libraries = copy.deepcopy(new_list)
-            best_books = copy.deepcopy(scanned_books_dict)
-            best_score = new_score
+        while day < n_days and len(all_libraries) > 0:
+            lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+            if lib_id == -1:
+                break
+            
+            scanned_books_dict[lib_id] = books
+            scanned_books_set.update(books)
+            for _ in range(libraries[lib_id].signup_days):
+                new_list.append(lib_id)
+                day += 1
+            all_libraries.remove(libraries[lib_id])
+
+        new_score = score(scanned_books_set, scores)
+        if new_score > solution.score:
             print("better!")
-            return found_better, Solution(best_libraries,best_score, best_books)
+            return True, Solution(new_list, new_score, scanned_books_dict)
         else:
             print("not better :(")
 
-    return found_better, Solution(best_libraries, best_score, best_books)
+    return False, solution
 
 def random_descendent(choosen_libraries, choosen_books, libraries, scores, n_days):
     return True
@@ -203,9 +181,7 @@ def random_walk(solution, libraries, scores, n_days):
         day += lib.signup_days
         all_libraries.remove(lib)
 
-    new_score = calculate_total_score(scanned_books_dict, scores)
-
-    return Solution(new_list, new_score, scanned_books_dict)
+    return Solution(new_list, score(scanned_books_set, scores), scanned_books_dict)
 
 
 
@@ -218,12 +194,12 @@ def greedy(libraries, n_days, scores):
     all_libraries = copy.deepcopy(libraries)
 
     while day < n_days and len(all_libraries)>0:
-        lib_id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+        lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
         if lib_id == -1:
             break
         lib = libraries[lib_id]
-        scanned_books_dict[lib_id] = lib.get_books(n_days-day)
-        scanned_books_set.update(scanned_books_dict[lib_id])
+        scanned_books_dict[lib_id] = books
+        scanned_books_set.update(books)
         for _ in range(lib.signup_days):
             solution[day] = lib_id
             day += 1

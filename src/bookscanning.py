@@ -1,7 +1,7 @@
 import sys
 from library import Library 
 from solution import Solution
-from utils import find_best_neighbour, calculate_total_score, choose_best_score, find_first_neighbour, random_walk, score, generate_solution
+from utils import find_best_neighbour, choose_best_score, find_first_neighbour, random_walk, score, generate_solution
 from io_funcs import scan_file, write_output
 import datetime
 import copy
