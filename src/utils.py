@@ -55,30 +55,31 @@ def find_best_neighbour(solution, libraries, scores, n_days):
     best_books = copy.deepcopy(solution.books2lib)
     found_better = False
 
-    for current_lib in best_libraries:
+    libraries_set = set(solution.libraries_list)
+    if -1 in libraries_set: 
+        libraries_set.remove(-1)
+
+    for current_lib in libraries_set:
         day = 0
         new_list = []
         scanned_books_dict = dict()
         scanned_books_set = set()
         all_libraries = copy.deepcopy(libraries)
-        for lib in solution.libraries_list:
+
+        while day < len(solution.libraries_list):
+            lib = solution.libraries_list[day]
             if lib == -1: 
                 break
             elif lib == current_lib:
-                try:
-                    all_libraries.remove(libraries[lib])
-                except ValueError:
-                    pass
+                all_libraries.remove(libraries[lib])
                 break
             else:
-                new_list.append(libraries[lib])
-                scanned_books_dict[lib] = libraries[lib].get_books(n_days-day)
+                scanned_books_dict[lib] = solution.books2lib[lib]
                 scanned_books_set.update(scanned_books_dict[lib])
-                try:
-                    all_libraries.remove(libraries[lib])
-                except ValueError:
-                    pass
-                day += libraries[lib].signup_days
+                for _ in range(libraries[lib].signup_days):
+                    new_list.append(lib)
+                    day += 1
+                all_libraries.remove(libraries[lib])
 
         
         while day < n_days and len(all_libraries) > 0:
@@ -105,15 +106,20 @@ def find_best_neighbour(solution, libraries, scores, n_days):
     return found_better, Solution(best_libraries, best_score, best_books)
 
 def find_first_neighbour(solution, libraries, scores, n_days):
-    for current_lib in solution.libraries_list:
+    libraries_set = set(solution.libraries_list)
+    if -1 in libraries_set: 
+        libraries_set.remove(-1)
+
+    for current_lib in libraries_set:
         day = 0
         new_list = []
         scanned_books_dict = dict()
         scanned_books_set = set()
         all_libraries = copy.deepcopy(libraries)
 
-        for lib in solution.libraries_list:
-            if lib == -1: 
+        while day < len(solution.libraries_list):
+            lib = solution.libraries_list[day]
+            if libraries == -1: 
                 break
             elif lib == current_lib:
                 all_libraries.remove(libraries[lib])
