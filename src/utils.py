@@ -169,7 +169,7 @@ def random_neighbour(solution, libraries, scores, n_days):
     if -1 in libraries_set: 
         libraries_set.remove(-1)
 
-    current_lib = choose_random_neighbour(libraries, libraries_set, n_days) # chooses the random library to switch
+    current_lib = random.choice(libraries_set)
     day = 0
     new_list = []
     scanned_books_dict = dict()
@@ -185,21 +185,6 @@ def random_neighbour(solution, libraries, scores, n_days):
         scanned_books_set.update(scanned_books_dict[lib.id])
         all_libraries.remove(lib)
         day += lib.signup_days
-
-    while day < len(solution.libraries_list):
-            lib = solution.libraries_list[day]
-            if libraries == -1: 
-                break
-            elif lib == current_lib:
-                all_libraries.remove(libraries[lib])
-                break
-            else:
-                scanned_books_dict[lib] = solution.books2lib[lib]
-                scanned_books_set.update(scanned_books_dict[lib])
-                for _ in range(libraries[lib].signup_days):
-                    new_list.append(lib)
-                    day += 1
-                all_libraries.remove(libraries[lib])
 
     while day < n_days and len(all_libraries) > 0:
         lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
