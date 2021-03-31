@@ -2,6 +2,7 @@ from library import Library
 import copy
 from solution import Solution
 import random
+import math
 
 def generate_solution(libraries_list, libraries, scores):
     day = 0 
@@ -12,7 +13,7 @@ def generate_solution(libraries_list, libraries, scores):
         lib = libraries_list[day]
         if lib == -1:
             break
-        books2lib[lib] = libraries[lib].get_books(n_days - day)
+        books2lib[lib] = libraries[lib].get_books(n_days - day, books)
         books.update(books2lib[lib])
         day += libraries[lib].signup_days
 
@@ -27,7 +28,7 @@ def choose_best_score(days, libraries, scores, scanned_books):
     best_lib = None
     for library in libraries:
         if library.signup_days > days: continue
-        books = [b for b in library.get_books(days) if b not in scanned_books]
+        books = library.get_books(days, scanned_books)
         s = score(books, scores) /library.signup_days
         if s > best_score:
             best_lib = library.id
@@ -153,14 +154,24 @@ def find_first_neighbour(solution, libraries, scores, n_days):
 
     return False, solution
 
-def random_descendent(choosen_libraries, choosen_books, libraries, scores, n_days):
-    return True
+def choose_random_neighbour(libraries, libraries_set, n_days): # returns a random id of a library 
+    tries = 0
 
-def random_walk(solution, libraries, scores, n_days):
-    uniques = set(solution.libraries_list)
-    current_lib = random.choice(list(uniques))
+    while(tries < 100000):
+        rand = random.sample(libraries_set, 1)
+        if libraries[rand[0]].signup_days < n_days:
+            return rand[0]
+    return 0
+
+
+def random_neighbour(solution, libraries, scores, n_days):
+    libraries_set = set(solution.libraries_list)
+    if -1 in libraries_set: 
+        libraries_set.remove(-1)
+
+    current_lib = choose_random_neighbour(libraries, libraries_set, n_days) # chooses the random library to switch
     day = 0
-    
+    new_list = []
     scanned_books_dict = dict()
     scanned_books_set = set()
     all_libraries = copy.deepcopy(libraries)
@@ -175,31 +186,46 @@ def random_walk(solution, libraries, scores, n_days):
         all_libraries.remove(lib)
         day += lib.signup_days
 
-        
+    while day < len(solution.libraries_list):
+            lib = solution.libraries_list[day]
+            if libraries == -1: 
+                break
+            elif lib == current_lib:
+                all_libraries.remove(libraries[lib])
+                break
+            else:
+                scanned_books_dict[lib] = solution.books2lib[lib]
+                scanned_books_set.update(scanned_books_dict[lib])
+                for _ in range(libraries[lib].signup_days):
+                    new_list.append(lib)
+                    day += 1
+                all_libraries.remove(libraries[lib])
+
     while day < n_days and len(all_libraries) > 0:
-        id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
-        if id == -1:
+        lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+        if lib_id == -1:
             break
-        lib = libraries[id]
-        scanned_books_dict[lib.id] = books
+        
+        scanned_books_dict[lib_id] = books
         scanned_books_set.update(books)
-        new_list.extend([lib.id for _ in range(lib.signup_days)])
-        day += lib.signup_days
-        all_libraries.remove(lib)
+        for _ in range(libraries[lib_id].signup_days):
+            new_list.append(lib_id)
+            day += 1
+        all_libraries.remove(libraries[lib_id])
 
-    return Solution(new_list, score(scanned_books_set, scores), scanned_books_dict)
+    new_score = score(scanned_books_set, scores)
+
+    return Solution(new_list, new_score, scanned_books_dict)
 
 
-
-
-def greedy(libraries, n_days, scores):
+def greedy(libraries, n_days, scores): # finding a greedy solution for the problem, at each step, the best current choice is made
     day = 0
     solution = [-1 for i in range(n_days)]
     scanned_books_set = set()
     scanned_books_dict = dict()
     all_libraries = copy.deepcopy(libraries)
 
-    while day < n_days and len(all_libraries)>0:
+    while day < n_days and len(all_libraries) > 0:
         lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
         if lib_id == -1:
             break
@@ -213,6 +239,39 @@ def greedy(libraries, n_days, scores):
 
     return Solution(solution, score(scanned_books_set, scores), scanned_books_dict)
 
+ 
+def cooling_function(t):    #estabilizes at 140 iterations
+    temp = 300
+    return temp / (1 + t)
+    
 
-# T/(1+t) , funçao de cooling t é a iteraçao , funçao probabilidade do enunciado T = 100 inicial
-# TabuSearch simulated annealing 
+def accept_with_probability(delta, t): # function to calculate the if the solution is accepted with a certain probability
+    r = random.randrange(0,1)
+    f = math.exp( delta / t)
+    if f >= r: 
+        return True
+    else: return False
+
+
+
+def simulated_annealing(solution, libraries, scores, n_days):
+    best_score = solution.score
+    not_accepted = 0
+
+    for time in range(500):
+        new_solution = random_neighbour(solution, libraries, scores, n_days) # gets new solution using random_descendent on previous found solution
+        t = cooling_function(time)
+
+        if t < 0.01: break # no need to keep trying to "cool down"
+        delta = new_solution.score - best_score
+
+        if delta <= 0 and not accept_with_probability(delta, t): 
+            not_accepted += 1
+            if not_accepted > 30: break
+            continue
+        else:
+            best_score = new_solution.score
+            solution = new_solution
+            print(best_score)
+ 
+    return solution

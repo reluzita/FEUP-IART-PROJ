@@ -9,10 +9,14 @@ class Library:
     def __str__(self):
         return str(self.id)
 
-    def get_books(self, days):
+    def get_books(self, days, scanned_books):
         remaining = days - self.signup_days
         n_books = self.books_per_day * remaining
-        return self.books[:n_books]
+        to_send = [book for book in self.books if book not in scanned_books]
+        if len(to_send) > n_books:
+            return to_send[:n_books]
+        else:
+            return to_send
 
     def send_books(self, days):
         remaining = days - self.signup_days
