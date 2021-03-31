@@ -46,7 +46,6 @@ def bookScanning(inputfile, algorithm):
                 print(solution.score)
     
         if algorithm == 5:
-            print(n_days)
             solution = simulated_annealing(solution, libraries, scores, n_days)
 
 
