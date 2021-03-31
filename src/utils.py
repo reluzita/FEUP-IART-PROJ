@@ -154,7 +154,7 @@ def find_first_neighbour(solution, libraries, scores, n_days):
 
     return False, solution
 
-def choose_random_neighbour(libraries, libraries_set, n_days):
+def choose_random_neighbour(libraries, libraries_set, n_days): # returns a random id of a library 
     tries = 0
 
     while(tries < 100000):
@@ -169,7 +169,7 @@ def random_neighbour(solution, libraries, scores, n_days):
     if -1 in libraries_set: 
         libraries_set.remove(-1)
 
-    current_lib = choose_random_neighbour(libraries, libraries_set, n_days)
+    current_lib = choose_random_neighbour(libraries, libraries_set, n_days) # chooses the random library to switch
     day = 0
     new_list = []
     scanned_books_dict = dict()
@@ -208,7 +208,7 @@ def random_neighbour(solution, libraries, scores, n_days):
     return Solution(new_list, new_score, scanned_books_dict)
 
 
-def greedy(libraries, n_days, scores):
+def greedy(libraries, n_days, scores): # finding a greedy solution for the problem, at each step, the best current choice is made
     day = 0
     solution = [-1 for i in range(n_days)]
     scanned_books_set = set()
@@ -230,12 +230,12 @@ def greedy(libraries, n_days, scores):
     return Solution(solution, score(scanned_books_set, scores), scanned_books_dict)
 
  
-def cooling_function(t):    #30 iteraçoes
+def cooling_function(t):    #estabilizes at 140 iterations
     temp = 300
     return temp / (1 + t)
     
 
-def accept_with_probability(delta, t):
+def accept_with_probability(delta, t): # function to calculate the if the solution is accepted with a certain probability
     r = random.randrange(0,1)
     f = math.exp( delta / t)
     if f >= r: 
@@ -249,10 +249,10 @@ def simulated_annealing(solution, libraries, scores, n_days):
     not_accepted = 0
 
     for time in range(500):
-        new_solution = random_neighbour(solution, libraries, scores, n_days)
-
+        new_solution = random_neighbour(solution, libraries, scores, n_days) # gets new solution using random_descendent on previous found solution
         t = cooling_function(time)
-        if t < 0.01: break
+
+        if t < 0.01: break # no need to keep trying to "cool down"
         delta = new_solution.score - best_score
 
         if delta <= 0 and not accept_with_probability(delta, t): 
