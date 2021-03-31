@@ -53,7 +53,7 @@ def file_menu():
 
 def algorithm_menu(file):
 
-    algorithms = {"1": "Greedy", "2": "Local Search - First Neighbour", "3": "Local Search - Best Neighbour", "4": "Local search - random neighbour", "5":"Simulated Annealing", "6": "Genetic", "7": "Choose another file"}
+    algorithms = {"1": "Greedy", "2": "Local Search - First Neighbour", "3": "Local Search - Best Neighbour", "4": "Local search - Random Neighbour", "5":"Simulated Annealing", "6": "Genetic", "7": "Choose another file"}
     message = "Choose the algorithm to apply to " + file + ": "
 
     while True:
