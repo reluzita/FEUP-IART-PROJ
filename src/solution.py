@@ -15,8 +15,8 @@ class Solution:
             line = "Choosen Libraries: " 
             for b in self.libraries_list: line += str(b) +" "
             print(line)
-        print("Score:", self.score)
-        print("Elapsed Time:",elapsed_time)
+        print("Score: ", self.score)
+        print("Elapsed Time: ",elapsed_time)
         print("\n\n")
 
     def __eq__(self, obj):

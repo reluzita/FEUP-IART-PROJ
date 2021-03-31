@@ -138,7 +138,7 @@ def calculate_solution_score(sol, libraries, scores):
         day+=lib.signup_days
     return score(books, scores)
 
-def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob):
+def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, population_variation):
     new_population = []
     for _ in range(len(population)):
         parent1, parent2 = tournament(population, 3)
@@ -152,7 +152,7 @@ def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob):
     total_population = copy.deepcopy(new_population)
     total_population.extend(population)
 
-    mutate_population(total_population, libraries, scores, mutation_prob, swap_prob)
+    mutate_population(total_population, libraries, scores, mutation_prob, swap_prob, population_variation)
 
     return sorted(total_population, key=lambda x:x.score, reverse=True)[:len(population)]
 
@@ -177,11 +177,11 @@ def generate_random(n_days, libraries, scores):
     
     return generate_solution(libraries_list, libraries, scores)
 
-def mutate_population(population, libraries, scores, mutation_prob, swap_prob):
+def mutate_population(population, libraries, scores, mutation_prob, swap_prob, population_variation):
     for solution in population:
         lib_list = None
         if random.random() < mutation_prob:
-            lib_list = mutate_solution(solution.libraries_list, libraries, 0.05)
+            lib_list = mutate_solution(solution.libraries_list, libraries, population_variation)
         if random.random() < swap_prob:
             lib_list = swap_mutation(solution.libraries_list, libraries)
         if lib_list != None:

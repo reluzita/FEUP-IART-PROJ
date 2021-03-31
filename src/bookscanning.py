@@ -14,8 +14,6 @@ def getElapsedTime(t):
 def bookScanning(inputfile, algorithm):
     n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
 
-    print("\n***", inputfile, "***")
-
     t = datetime.datetime.now()
 
     all_libraries = copy.deepcopy(libraries)
@@ -55,12 +53,11 @@ def bookScanning(inputfile, algorithm):
 def genetic(inputfile):
     n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
     population_size = 10
-    generations = 100
-    mutation_prob = 0.2
-    swap_prob = 0.2
+    generations = 10
+    mutation_prob = 0.05
+    swap_prob = 0.05
+    population_variation = 0.01
 
-
-    print("\n***", inputfile, "***")
     t = datetime.datetime.now()
 
     greedy_solution = greedy(libraries, n_days, scores)
@@ -69,12 +66,12 @@ def genetic(inputfile):
     #population = []
     for i in range(population_size-1):
         print("generating new mutation")
-        new_solution = mutate_solution(greedy_solution.libraries_list, libraries, 0.01)
+        new_solution = mutate_solution(greedy_solution.libraries_list, libraries, population_variation)
         population.append(generate_solution(new_solution, libraries, scores))
 
     print("population done")
     for i in range(generations):
-        new_population = genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob)
+        new_population = genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, population_variation)
         population = []
         for s in new_population:
             if s in population:

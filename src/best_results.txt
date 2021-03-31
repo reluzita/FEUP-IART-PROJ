@@ -1,0 +1,5 @@
+----------> ficheiro A
+greedy: 21
+local search - first neighbour : 21
+local search - best neighbour : 21
+
