@@ -16,12 +16,12 @@ def choice_input(min, max):
     return val
 
 def print_menu(options, message):
-    print("\n****************************")
+    print("\n***************************************")
     print(message, '\n')
     
     for key, value in options.items():
         print(key + ". " + value)
-    print("\n*****************************")
+    print("\n***************************************")
 
     return choice_input(1, len(options))
 
@@ -29,7 +29,7 @@ def print_menu(options, message):
 
 def best_scores():
     
-    print("\n*****************************")
+    print("\n***************************************")
     input("Press any key to return to main menu...")
     return 0
 
@@ -60,13 +60,13 @@ def algorithm_menu(file):
         algorithm = print_menu(algorithms, message)
         if algorithm == 7: break
 
-        print("\n*****************************")
-        print("Applying " + algorithms[str(algorithm)] + " to " + file)
+        print("\n***************************************")
+        print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
 
         if algorithm >= 1 and algorithm <= 5: bookScanning(file, algorithm)
         else:  genetic(file)
 
-        print("\n*****************************")
+        print("\n***************************************")
         input("Press any key to return to algorithms menu...")
 
     return 1
