@@ -256,6 +256,8 @@ def simulated_annealing(solution, libraries, scores, n_days):
         delta = new_solution.score - best_score
 
         if delta <= 0 and not accept_with_probability(delta, t): 
+            not_accepted += 1
+            if not_accepted > 30: break
             continue
         else:
             best_score = new_solution.score

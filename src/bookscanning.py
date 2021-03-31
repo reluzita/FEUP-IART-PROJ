@@ -1,7 +1,7 @@
 import sys
 from library import Library 
 from solution import Solution
-from utils import find_best_neighbour, choose_best_score, find_first_neighbour, random_walk, score, generate_solution, simulated_annealing
+from utils import find_best_neighbour, choose_best_score, find_first_neighbour, score, generate_solution, simulated_annealing, random_neighbour
 from io_funcs import scan_file, write_output
 import datetime
 import copy
@@ -39,11 +39,11 @@ def bookScanning(inputfile, algorithm):
 
         
         if algorithm == 4:
-            for _ in range(1000):
-                new_solution = random_walk(solution, libraries, scores, n_days)
+            while(true):
+                new_solution = random_neighbour(solution, libraries, scores, n_days)
                 if new_solution.score > solution.score:
                     solution = new_solution
-                print(solution.score)
+                else: break
     
         if algorithm == 5:
             solution = simulated_annealing(solution, libraries, scores, n_days)

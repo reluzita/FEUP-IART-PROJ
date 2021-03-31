@@ -27,7 +27,7 @@ def file_menu():
     return files[choice]
 
 def algorithm_menu():
-    algorithms = {"1": "Greedy", "2": "Local search - first neighbour", "3": "Local search - best neighbour", "4": "Local search - random walk", "5":"Simulated Annealing", "6": "Genetic"}
+    algorithms = {"1": "Greedy", "2": "Local search - first neighbour", "3": "Local search - best neighbour", "4": "Local search - random neighbour", "5":"Simulated Annealing", "6": "Genetic"}
     print("\n\n****************************")
     print("Choose the algorithm to apply: \n")
     for key,value in algorithms.items():
