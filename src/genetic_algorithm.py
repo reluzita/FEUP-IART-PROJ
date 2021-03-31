@@ -134,7 +134,7 @@ def calculate_solution_score(sol, libraries, scores):
     while day < n_days:
         if sol[day] == -1: break
         lib = libraries[sol[day]]
-        books.update(lib.get_books(n_days - day))
+        books.update(lib.get_books(n_days - day, books))
         day+=lib.signup_days
     return score(books, scores)
 

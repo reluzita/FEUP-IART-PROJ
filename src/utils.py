@@ -12,7 +12,7 @@ def generate_solution(libraries_list, libraries, scores):
         lib = libraries_list[day]
         if lib == -1:
             break
-        books2lib[lib] = libraries[lib].get_books(n_days - day)
+        books2lib[lib] = libraries[lib].get_books(n_days - day, books)
         books.update(books2lib[lib])
         day += libraries[lib].signup_days
 
@@ -27,7 +27,7 @@ def choose_best_score(days, libraries, scores, scanned_books):
     best_lib = None
     for library in libraries:
         if library.signup_days > days: continue
-        books = [b for b in library.get_books(days) if b not in scanned_books]
+        books = library.get_books(days, scanned_books)
         s = score(books, scores) /library.signup_days
         if s > best_score:
             best_lib = library.id
@@ -170,19 +170,19 @@ def random_walk(solution, libraries, scores, n_days):
     new_list = solution.libraries_list[:new_day]
     while day < new_day:
         lib = libraries[solution.libraries_list[day]]
-        scanned_books_dict[lib.id] = lib.get_books(n_days-day)
+        scanned_books_dict[lib.id] = solution.books2lib[lib.id]
         scanned_books_set.update(scanned_books_dict[lib.id])
         all_libraries.remove(lib)
         day += lib.signup_days
 
         
     while day < n_days and len(all_libraries) > 0:
-        id = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
+        id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
         if id == -1:
             break
         lib = libraries[id]
-        scanned_books_dict[lib.id] = lib.get_books(n_days-day)
-        scanned_books_set.update(scanned_books_dict[lib.id])
+        scanned_books_dict[lib.id] = books
+        scanned_books_set.update(books)
         new_list.extend([lib.id for _ in range(lib.signup_days)])
         day += lib.signup_days
         all_libraries.remove(lib)
