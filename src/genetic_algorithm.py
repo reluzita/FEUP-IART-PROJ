@@ -34,6 +34,70 @@ def reproduce(p1, p2, libraries):
     child.extend(part2)
 
     return child
+
+def crossover(p1, p2):
+    #get library ids in parent 1
+    libs1 = set(p1)
+    if -1 in libs1:
+        libs1.remove(-1)
+
+    #get 2 random libraries to delimit linear order portion
+    delimiters = random.sample(libs1, 2)
+    delimiters = sorted(delimiters, key=lambda x: p1.index(x))
+
+    #get linear order portion from parent 1
+    point1 = p1.index(delimiters[0])
+    point2 = len(p1) - p1[::-1].index(delimiters[1])
+    portion = p1[point1:point2]
+
+    remaining_libs = []
+    for lib in p2:
+        if lib == -1:
+            break
+        if lib not in remaining_libs and lib not in portion:
+            remaining_libs.append(lib)
+
+    slots_before = point1
+    slots_after = len(p1) - point2
+
+    initial_part = []
+    while slots_before > 0:
+        found = False
+        for lib in remaining_libs:
+            n = p2.count(lib) 
+            if n <= slots_before:
+                for _ in range(n): initial_part.append(lib)
+                remaining_libs.remove(lib)
+                slots_before -= n
+                found = True
+                break
+        if not found:
+            break
+
+    slots_after += slots_before
+    final_part = []
+    while slots_after > 0:
+        found = False
+        for lib in remaining_libs:
+            n = p2.count(lib) 
+            if n <= slots_after:
+                for _ in range(n): final_part.append(lib)
+                remaining_libs.remove(lib)
+                slots_after -= n
+                found = True
+                break
+        if not found:
+            break
+    
+    child = initial_part
+    child.extend(portion)
+    child.extend(final_part)
+    while len(child) < len(p1):
+        child.append(-1)
+
+    return child
+    
+
     
 def remove_duplicates(solution, duplicates, libraries):
     final = copy.deepcopy(solution)
@@ -78,10 +142,11 @@ def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob):
     new_population = []
     for _ in range(len(population)):
         parent1, parent2 = tournament(population, 3)
-        child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
-        while child == -1:
-            parent1, parent2 = tournament(population, 3)
-            child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
+        #child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
+        #while child == -1:
+        #    parent1, parent2 = tournament(population, 3)
+        #    child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
+        child = crossover(parent1.libraries_list, parent2.libraries_list)
         new_population.append(generate_solution(child, libraries, scores))
     
     total_population = copy.deepcopy(new_population)

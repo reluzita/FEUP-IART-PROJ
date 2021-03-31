@@ -58,7 +58,7 @@ def bookScanning(inputfile, algorithm):
 
 def genetic(inputfile):
     n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
-    population_size = 50
+    population_size = 10
     generations = 100
     mutation_prob = 0.2
     swap_prob = 0.2
@@ -72,7 +72,8 @@ def genetic(inputfile):
     population = [greedy_solution]
     #population = []
     for i in range(population_size-1):
-        new_solution = mutate_solution(greedy_solution.libraries_list, libraries, 0.2)
+        print("generating new mutation")
+        new_solution = mutate_solution(greedy_solution.libraries_list, libraries, 0.01)
         population.append(generate_solution(new_solution, libraries, scores))
 
     print("population done")
