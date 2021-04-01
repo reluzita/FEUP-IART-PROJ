@@ -169,7 +169,7 @@ def random_neighbour(solution, libraries, scores, n_days):
     if -1 in libraries_set: 
         libraries_set.remove(-1)
 
-    current_lib = random.sample(list(libraries_set), 1)
+    current_lib = random.choice(list(libraries_set))
     day = 0
     new_list = []
     scanned_books_dict = dict()

@@ -37,7 +37,7 @@ def bookScanning(inputfile, algorithm):
 
         
         if algorithm == 4:
-            while(True):
+            while True :
                 new_solution = random_neighbour(solution, libraries, scores, n_days)
                 if new_solution.score > solution.score:
                     solution = new_solution
@@ -46,11 +46,8 @@ def bookScanning(inputfile, algorithm):
         if algorithm == 5:
             solution = simulated_annealing(solution, libraries, scores, n_days)
 
-
-
     elapsed_time = datetime.datetime.now() - t
-    print("Elapsed time: " + str(elapsed_time))
-    print(solution.score)
+    solution.printSol(elapsed_time)
 
     write_output(inputfile, solution)
 
@@ -65,6 +62,7 @@ def genetic(inputfile):
     greedy_solution = read_output("greedy/" + inputfile, libraries, scores)
     print("found greedy")
     population = [greedy_solution]
+
     for i in range(population_size-1):
         new_solution = mutate_solution(greedy_solution.libraries_list, libraries, population_variation)
         population.append(generate_solution(new_solution, libraries, scores))
@@ -88,8 +86,10 @@ def genetic(inputfile):
         print(i, "- max:", best.score, "avg:", mean)
 
     elapsed_time = datetime.datetime.now() - t
-    print("Elapsed time: " + str(elapsed_time))
 
     best = sorted(population, key=lambda x: x.score, reverse=True)[0]
+
+    best.printSol(elapsed_time)
+    
     write_output(inputfile, best)
 

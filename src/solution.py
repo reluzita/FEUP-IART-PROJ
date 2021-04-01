@@ -6,18 +6,13 @@ class Solution:
         self.score = score # final score
         self.books2lib = books2lib
         
-    def printSol(self, printLibraries, elapsed_time):
-        print("\n\n--------------------------")
-        print("Solution")
-        print("--------------------------")
+    def printSol(self, elapsed_time):
+        print("\n-----------------------------")
+        print("         Solution")
+        print("-----------------------------")
         
-        if printLibraries:
-            line = "Choosen Libraries: " 
-            for b in self.libraries_list: line += str(b) +" "
-            print(line)
-        print("Score: ", self.score)
-        print("Elapsed Time: ",elapsed_time)
-        print("\n\n")
+        print("Score:", self.score)
+        print("Elapsed Time:",str(elapsed_time))
 
     def __eq__(self, obj):
         return self.score == obj.score and functools.reduce(lambda x, y : x and y, map(lambda p, q: p == q, self.libraries_list ,obj.libraries_list), True)
