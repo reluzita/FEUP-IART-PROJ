@@ -12,7 +12,7 @@ def getElapsedTime(t):
     return datetime.datetime.now() - t
 
 def bookScanning(inputfile, algorithm):
-    n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
+    n_books, n_libraries, n_days, scores, libraries = scan_file("input/" + inputfile)
 
     t = datetime.datetime.now()
 
