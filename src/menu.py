@@ -1,5 +1,6 @@
 import sys
 from bookscanning import bookScanning, genetic
+from genetic_algorithm import get_parameters
 
 def choice_input(min, max):
     user_in = input("Insert a number from the menu: ")
@@ -12,6 +13,21 @@ def choice_input(min, max):
                 break
         except ValueError:
             user_in = input("Invalid input, please insert a valid one: ")
+
+    return val
+
+def value_input(value, default, isInteger, min, max):
+    user_in = input("\nInsert a value for " + value + " (default value: " + str(default) + "): ")
+    
+    while True:
+        try:
+            val = int(user_in) if isInteger else float(user_in)
+            if(val < min or val > max):
+                user_in = input("Invalid input, please insert a valid one (min: " + str(min) + ", max: " + str(max) + "): ")
+            else:
+                break
+        except ValueError:
+            user_in = input("Invalid input, please insert a valid one (min: " + str(min) + ", max: " + str(max) + "): ")
 
     return val
 
@@ -28,9 +44,20 @@ def print_menu(options, message):
 ###############################################################################################################################################################################
 
 def best_scores():
-    
     print("\n***************************************")
-    input("Press any key to return to main menu...")
+    print(" Best Scores\n")
+
+    print(" File                         | Score     | Algorithm")
+    print("------------------------------------------------------")
+    print(" a_example.txt                |        21 | Greedy")
+    print(" b_read_on.txt                | 5 822 900 | Greedy")
+    print(" c_incunabula.txt             | 5 689 822 | Greedy")
+    print(" d_tough_choices.txt          | 5 028 530 | Greedy")
+    print(" e_so_many_books.txt          | 5 034 888 | Greedy")
+    print(" f_libraries_of_the_world.txt | 5 308 034 | Greedy")
+
+    print("\n***************************************")
+    input("Press enter to return to main menu...")
     return 0
 
 ###############################################################################################################################################################################
@@ -53,24 +80,46 @@ def file_menu():
 
 def algorithm_menu(file):
 
-    algorithms = {"1": "Greedy", "2": "Local Search - First Neighbour", "3": "Local Search - Best Neighbour", "4": "Local search - Random Neighbour", "5":"Simulated Annealing", "6": "Genetic", "7": "Choose another file"}
+    algorithms = {"1": "Greedy", "2": "Local Search - First Neighbour", "3": "Local Search - Best Neighbour", "4": "Local Search - Random Neighbour", "5":"Simulated Annealing", "6": "Genetic", "7": "Choose another file"}
     message = "Choose the algorithm to apply to " + file + ": "
 
     while True:
         algorithm = print_menu(algorithms, message)
         if algorithm == 7: break
 
-        print("\n***************************************")
-        print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
+        if algorithm >= 1 and algorithm <= 5: 
+            print("\n***************************************")
+            print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
+            bookScanning(file, algorithm)
 
-        if algorithm >= 1 and algorithm <= 5: bookScanning(file, algorithm)
-        else:  
-            genetic(file)
+        elif algorithm == 6:  
+            menu_genetic(file)
 
         print("\n***************************************")
-        input("Press any key to return to algorithms menu...")
+        input("Press enter to return to algorithms menu...")
 
     return 1
+
+def menu_genetic(file):
+    options = {"1": "Use default values", "2": "Personalize values"}
+    message = "Genetic uses constant values for population size, number of generations, mutation and swap probabilities and population variation. \nWhat do you want to do?"
+    choice = print_menu(options, message)
+
+    population_size, generations, mutation_prob, swap_prob, population_variation = get_parameters(file)
+    
+    #value, default, isInteger, min, max
+    if choice == 2:
+        print("\n***************************************") 
+        population_size = value_input("Population Size", population_size, True, 6, 100)
+        generations = value_input("Number of Generations", generations, True, 10, 1000)
+        mutation_prob = value_input("Mutation Probability", mutation_prob, False, 0, 1)
+        swap_prob = value_input("Swap Probability", swap_prob, False, 0, 1)
+        population_variation = value_input("Population Variation", population_variation, False, 0, 1)
+    
+    print("\n***************************************")
+    print("Applying Genetic to " + file, '\n')
+    genetic(file, population_size, generations, mutation_prob, swap_prob, population_variation)
+    
 
 ###############################################################################################################################################################################
 

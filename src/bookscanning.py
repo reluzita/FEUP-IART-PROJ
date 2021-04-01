@@ -6,7 +6,7 @@ from io_funcs import scan_file, write_output, read_output
 import datetime
 import copy
 from utils import greedy
-from genetic_algorithm import genetic_algorithm, generate_random, mutate_solution, get_parameters
+from genetic_algorithm import genetic_algorithm, generate_random, mutate_solution
 
 def getElapsedTime(t):
     return datetime.datetime.now() - t
@@ -53,9 +53,9 @@ def bookScanning(inputfile, algorithm):
 
     write_output(inputfile, solution)
 
-def genetic(inputfile):
+
+def genetic(inputfile, population_size, generations, mutation_prob, swap_prob, population_variation):
     _, scores, libraries = scan_file("input/" + inputfile)
-    population_size, generations, mutation_prob, swap_prob, population_variation = get_parameters(inputfile)
 
     print(population_size, generations, mutation_prob, swap_prob, population_variation)
 

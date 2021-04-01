@@ -239,7 +239,13 @@ def swap_mutation(solution, libraries):
     return new_solution                  
 
 def get_parameters(inputfile):
-    if inputfile == "c_incunabula.txt":
+    if inputfile == "b_read_on.txt":
+        population_size = 50
+        generations = 1000
+        mutation_prob = 0.2
+        swap_prob = 0.2
+        population_variation = 0.2
+    elif inputfile == "c_incunabula.txt":
         population_size = 10
         generations = 10
         mutation_prob = 0.05
