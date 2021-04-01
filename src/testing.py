@@ -6,12 +6,13 @@ from io_funcs import scan_file, write_output, read_output
 import datetime
 import copy
 import random
-from genetic_algorithm import genetic_algorithm, mutate_solution, generate_random, crossover
+from genetic_algorithm import genetic_algorithm, mutate_solution, generate_random, crossover, get_parameters
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    n_days, scores, libraries = scan_file("input/b_read_on.txt")
+    n_days, scores, libraries = scan_file("input/f_libraries_of_the_world.txt")
 
-    population_size, generations, mutation_prob, swap_prob, population_variation = get_parameters(inputfile)
+    population_size, generations, mutation_prob, swap_prob, population_variation = get_parameters("f_libraries_of_the_world.txt")
 
     print(population_size, generations, mutation_prob, swap_prob, population_variation)
 
@@ -23,6 +24,8 @@ if __name__ == "__main__":
         population.append(generate_random(n_days, libraries, scores))
 
     print("population done")
+    best_scores = []
+    avg_scores = []
     for i in range(generations):
         new_population = genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, population_variation)
         population = []
@@ -37,6 +40,9 @@ if __name__ == "__main__":
         best = sorted(population, key=lambda x: x.score, reverse=True)[0]
         mean = sum([x.score for x in population])/len(population)
 
+        best_scores.append(best.score)
+        avg_scores.append(mean)
+
         print(i, "- max:", best.score, "avg:", mean)
 
     elapsed_time = datetime.datetime.now() - t
@@ -44,6 +50,12 @@ if __name__ == "__main__":
     best = sorted(population, key=lambda x: x.score, reverse=True)[0]
 
     best.printSol(elapsed_time)
+
+    gen_list = range(generations)
+    plt.plot(gen_list, best_scores, 'r', gen_list, avg_scores, 'b')
+    plt.ylabel('scores')
+    plt.xlabel('generations')
+    plt.show()
     
                     
     

@@ -183,6 +183,8 @@ def mutate_population(population, libraries, scores, mutation_prob, swap_prob, p
 
 def mutate_solution(solution, libraries, mutation_no):
     uniques = set(solution)
+    if -1 in uniques:
+        uniques.remove(-1)
     old_lib_ids = random.sample(list(uniques), ceil(mutation_no*len(uniques)))
 
     new_solution = copy.deepcopy(solution)
@@ -263,8 +265,8 @@ def get_parameters(inputfile):
         swap_prob = 0.2
         population_variation = 0.2
     elif inputfile == "f_libraries_of_the_world.txt":
-        population_size = 50
-        generations = 1000
+        population_size = 20
+        generations = 100
         mutation_prob = 0.2
         swap_prob = 0.2
         population_variation = 0.2
