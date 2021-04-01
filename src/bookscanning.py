@@ -39,11 +39,10 @@ def bookScanning(inputfile, algorithm):
 
         
         if algorithm == 4:
-            while True :
+            for _ in range(30):
                 new_solution = random_neighbour(solution, libraries, scores, n_days)
                 if new_solution.score > solution.score:
                     solution = new_solution
-                else: break
     
         if algorithm == 5:
             solution = simulated_annealing(solution, libraries, scores, n_days)
