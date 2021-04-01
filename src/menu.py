@@ -64,7 +64,8 @@ def algorithm_menu(file):
         print("Applying " + algorithms[str(algorithm)] + " to " + file)
 
         if algorithm >= 1 and algorithm <= 5: bookScanning(file, algorithm)
-        else:  genetic(file)
+        else:  
+            genetic(file)
 
         print("\n*****************************")
         input("Press any key to return to algorithms menu...")

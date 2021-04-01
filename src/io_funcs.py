@@ -1,7 +1,8 @@
 import sys
 import os
 from library import Library
-from utils import read_libraries
+from utils import read_libraries, score
+from solution import Solution
 
 
 
@@ -24,12 +25,28 @@ def write_output(inputName, solution):
         file.write("\n")        
 
     file.close()
+
+def read_output(file, libraries, scores):
+    with open(file, 'r', encoding = 'utf-8') as ifp:
+	    lines = ifp.readlines()
+
+    n_libraries = int(lines[0])
+    libraries_list = []
+    books2lib = dict()
+    books = set()
+    for i in range(n_libraries):
+        line = lines[i*2+1].split()
+        lib_id = int(line[0])
+        for _ in range(libraries[lib_id].signup_days):
+            libraries_list.append(lib_id)
+        books2lib[lib_id] = [int(x) for x in lines[i*2+2].split()]
+        books.update(books2lib[lib_id])
     
+    return Solution(libraries_list, score(books, scores), books2lib)
+
 
 
 def scan_file(file):
-    if file == "input/a_example.txt": printLibraries = False
-    else: printLibraries = True
     if os.stat(file).st_size == 0:
         print("File is empty!")
         sys.exit()
@@ -57,7 +74,7 @@ def scan_file(file):
     
     libraries = read_libraries(sections, n_libraries, books)
     
-    return n_books, n_libraries, n_days, books, libraries, printLibraries
+    return n_books, n_libraries, n_days, books, libraries
 
 
 

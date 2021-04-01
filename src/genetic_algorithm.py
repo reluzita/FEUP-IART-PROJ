@@ -237,3 +237,31 @@ def swap_mutation(solution, libraries):
     new_solution.extend(solution[day2+signup2:])
 
     return new_solution                  
+
+def get_parameters(inputfile):
+    if inputfile == "c_incunabula.txt":
+        population_size = 10
+        generations = 10
+        mutation_prob = 0.05
+        swap_prob = 0.05
+        population_variation = 0.01
+    elif inputfile == "d_tough_choices.txt":
+        population_size = 10
+        generations = 10
+        mutation_prob = 0.05
+        swap_prob = 0.05
+        population_variation = 0.001
+    elif inputfile == "e_so_many_books.txt":
+        population_size = 50
+        generations = 1000
+        mutation_prob = 0.2
+        swap_prob = 0.2
+        population_variation = 0.2
+    elif inputfile == "f_libraries_of_the_world.txt":
+        population_size = 50
+        generations = 1000
+        mutation_prob = 0.2
+        swap_prob = 0.2
+        population_variation = 0.2
+
+    return population_size, generations, mutation_prob, swap_prob, population_variation
