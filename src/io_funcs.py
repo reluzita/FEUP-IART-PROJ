@@ -74,7 +74,7 @@ def scan_file(file):
     
     libraries = read_libraries(sections, n_libraries, books)
     
-    return n_books, n_libraries, n_days, books, libraries
+    return n_days, books, libraries
 
 
 

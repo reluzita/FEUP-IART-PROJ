@@ -12,15 +12,17 @@ def getElapsedTime(t):
     return datetime.datetime.now() - t
 
 def bookScanning(inputfile, algorithm):
-    n_books, n_libraries, n_days, scores, libraries, printLibraries = scan_file("input/" + inputfile)
+    n_days, scores, libraries = scan_file("input/" + inputfile)
 
     t = datetime.datetime.now()
 
-    all_libraries = copy.deepcopy(libraries)
+    solution = None
+    if algorithm == 1:
+        all_libraries = copy.deepcopy(libraries)
+        solution = greedy(all_libraries, n_days, scores)
+    else:
+        solution = read_output("greedy/" + inputfile, libraries, scores)
 
-    solution = greedy(all_libraries, n_days, scores)
-
-    if algorithm != 1:
         print("\n--------------------------")
         print("Greedy is done, optimizing now!")
         print("-------------------------- ")
