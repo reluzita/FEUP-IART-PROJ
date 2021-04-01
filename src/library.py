@@ -25,3 +25,6 @@ class Library:
   
     def __eq__(self, other):
         return(self.__class__ == other.__class__ and self.id == other.id)
+
+    def __hash__(self):
+        return self.id

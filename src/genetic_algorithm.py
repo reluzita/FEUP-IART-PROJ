@@ -35,7 +35,7 @@ def reproduce(p1, p2, libraries):
 
     return child
 
-def crossover(p1, p2):
+def crossover(p1, p2, libraries):
     #get library ids in parent 1
     libs1 = set(p1)
     if -1 in libs1:
@@ -50,13 +50,11 @@ def crossover(p1, p2):
     point2 = len(p1) - p1[::-1].index(delimiters[1])
     portion = p1[point1:point2]
 
-    remaining_libs = []
-    for lib in p2:
-        if lib == -1:
-            break
-        if lib not in remaining_libs and lib not in portion:
-            remaining_libs.append(lib)
-
+    libs2 = set(p2)
+    if -1 in libs2:
+        libs2.remove(-1)
+    remaining_libs = list(filter(lambda x:x not in portion, list(libs2)))
+    
     slots_before = point1
     slots_after = len(p1) - point2
 
@@ -64,7 +62,7 @@ def crossover(p1, p2):
     while slots_before > 0:
         found = False
         for lib in remaining_libs:
-            n = p2.count(lib) 
+            n = libraries[lib].signup_days 
             if n <= slots_before:
                 for _ in range(n): initial_part.append(lib)
                 remaining_libs.remove(lib)
@@ -79,7 +77,7 @@ def crossover(p1, p2):
     while slots_after > 0:
         found = False
         for lib in remaining_libs:
-            n = p2.count(lib) 
+            n = libraries[lib].signup_days 
             if n <= slots_after:
                 for _ in range(n): final_part.append(lib)
                 remaining_libs.remove(lib)
@@ -142,11 +140,7 @@ def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, p
     new_population = []
     for _ in range(len(population)):
         parent1, parent2 = tournament(population, 3)
-        #child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
-        #while child == -1:
-        #    parent1, parent2 = tournament(population, 3)
-        #    child = reproduce(parent1.libraries_list, parent2.libraries_list, libraries)
-        child = crossover(parent1.libraries_list, parent2.libraries_list)
+        child = crossover(parent1.libraries_list, parent2.libraries_list, libraries)
         new_population.append(generate_solution(child, libraries, scores))
     
     total_population = copy.deepcopy(new_population)
@@ -201,11 +195,16 @@ def mutate_solution(solution, libraries, mutation_no):
         second_part = list(filter(lambda a: a != -1, new_solution[day + old_lib.signup_days:]))
         remaining_days = len(new_solution) - (len(first_part) + len(second_part))
 
-        not_used = [lib for lib in libraries if lib.id not in new_solution and lib.signup_days < remaining_days]
+        new_lib = random.choice(libraries)
+        checked = {new_lib}
+        n = len(libraries)
+        while (new_lib.id in new_solution or new_lib.signup_days > remaining_days) and len(checked) < n:
+            new_lib = random.choice(libraries)
+            checked.add(new_lib)
+
         new_solution = first_part
-        if len(not_used) > 0:
-            new_lib = random.choice(not_used)
-                    
+
+        if new_lib.id not in new_solution and new_lib.signup_days <= remaining_days: 
             for _ in range(new_lib.signup_days):
                 new_solution.append(new_lib.id)
                         
