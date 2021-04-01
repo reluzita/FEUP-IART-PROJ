@@ -1,8 +1,9 @@
-import random
-from utils import score, generate_solution
-from solution import Solution
 import copy
+import random
 from math import ceil
+
+from utils import score, generate_solution
+
 
 def tournament(population, np):
     g1 = random.sample(population, np)
@@ -13,13 +14,15 @@ def tournament(population, np):
     parent2 = sorted(g2, key=lambda x: x.score, reverse=True)[0]
     return parent1, parent2
 
+
 def reproduce(p1, p2, libraries):
     total_days = len(p1)
     crossoverpoints = []
-    for i in range(total_days-1):
-        if p1[i] != p1[i+1] and p2[i] != p2[i+1]:
-            crossoverpoints.append(i+1)
-    if len(crossoverpoints) == 0: 
+
+    for i in range(total_days - 1):
+        if p1[i] != p1[i + 1] and p2[i] != p2[i + 1]:
+            crossoverpoints.append(i + 1)
+    if len(crossoverpoints) == 0:
         return -1
     point = random.choice(crossoverpoints)
 
@@ -35,17 +38,18 @@ def reproduce(p1, p2, libraries):
 
     return child
 
+
 def crossover(p1, p2, libraries):
-    #get library ids in parent 1
+    # get library ids in parent 1
     libs1 = set(p1)
     if -1 in libs1:
         libs1.remove(-1)
 
-    #get 2 random libraries to delimit linear order portion
+    # get 2 random libraries to delimit linear order portion
     delimiters = random.sample(libs1, 2)
     delimiters = sorted(delimiters, key=lambda x: p1.index(x))
 
-    #get linear order portion from parent 1
+    # get linear order portion from parent 1
     point1 = p1.index(delimiters[0])
     point2 = len(p1) - p1[::-1].index(delimiters[1])
     portion = p1[point1:point2]
@@ -53,8 +57,8 @@ def crossover(p1, p2, libraries):
     libs2 = set(p2)
     if -1 in libs2:
         libs2.remove(-1)
-    remaining_libs = list(filter(lambda x:x not in portion, list(libs2)))
-    
+    remaining_libs = list(filter(lambda x: x not in portion, list(libs2)))
+
     slots_before = point1
     slots_after = len(p1) - point2
 
@@ -62,7 +66,7 @@ def crossover(p1, p2, libraries):
     while slots_before > 0:
         found = False
         for lib in remaining_libs:
-            n = libraries[lib].signup_days 
+            n = libraries[lib].signup_days
             if n <= slots_before:
                 for _ in range(n): initial_part.append(lib)
                 remaining_libs.remove(lib)
@@ -77,7 +81,7 @@ def crossover(p1, p2, libraries):
     while slots_after > 0:
         found = False
         for lib in remaining_libs:
-            n = libraries[lib].signup_days 
+            n = libraries[lib].signup_days
             if n <= slots_after:
                 for _ in range(n): final_part.append(lib)
                 remaining_libs.remove(lib)
@@ -86,7 +90,7 @@ def crossover(p1, p2, libraries):
                 break
         if not found:
             break
-    
+
     child = initial_part
     child.extend(portion)
     child.extend(final_part)
@@ -94,12 +98,11 @@ def crossover(p1, p2, libraries):
         child.append(-1)
 
     return child
-    
 
-    
+
 def remove_duplicates(solution, duplicates, libraries):
     final = copy.deepcopy(solution)
-    
+
     for old_id in duplicates:
         day = solution.index(old_id)
         old_lib = libraries[old_id]
@@ -112,29 +115,32 @@ def remove_duplicates(solution, duplicates, libraries):
         new_solution = first_part
         if len(not_used) > 0:
             new_lib = random.choice(not_used)
-                    
+
             for _ in range(new_lib.signup_days):
                 new_solution.append(new_lib.id)
-                           
+
         new_solution.extend(second_part)
 
-        while(len(new_solution) < len(solution)):
+        while len(new_solution) < len(solution):
             new_solution.append(-1)
 
         final = copy.deepcopy(new_solution)
-        
+
     return final
+
 
 def calculate_solution_score(sol, libraries, scores):
     books = set()
     day = 0
     n_days = len(sol)
     while day < n_days:
-        if sol[day] == -1: break
+        if sol[day] == -1:
+            break
         lib = libraries[sol[day]]
         books.update(lib.get_books(n_days - day, books))
-        day+=lib.signup_days
+        day += lib.signup_days
     return score(books, scores)
+
 
 def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, population_variation):
     new_population = []
@@ -142,13 +148,14 @@ def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, p
         parent1, parent2 = tournament(population, 3)
         child = crossover(parent1.libraries_list, parent2.libraries_list, libraries)
         new_population.append(generate_solution(child, libraries, scores))
-    
+
     total_population = copy.deepcopy(new_population)
     total_population.extend(population)
 
     mutate_population(total_population, libraries, scores, mutation_prob, swap_prob, population_variation)
 
-    return sorted(total_population, key=lambda x:x.score, reverse=True)[:len(population)]
+    return sorted(total_population, key=lambda x: x.score, reverse=True)[:len(population)]
+
 
 def generate_random(n_days, libraries, scores):
     not_used = [i for i in range(len(libraries))]
@@ -166,10 +173,11 @@ def generate_random(n_days, libraries, scores):
         if len(not_used) == 1: break
         for _ in range(lib.signup_days):
             libraries_list[day] = lib_id
-            day+=1
+            day += 1
         not_used.remove(lib_id)
-    
+
     return generate_solution(libraries_list, libraries, scores)
+
 
 def mutate_population(population, libraries, scores, mutation_prob, swap_prob, population_variation):
     for solution in population:
@@ -178,12 +186,13 @@ def mutate_population(population, libraries, scores, mutation_prob, swap_prob, p
             lib_list = mutate_solution(solution.libraries_list, libraries, population_variation)
         if random.random() < swap_prob:
             lib_list = swap_mutation(solution.libraries_list, libraries)
-        if lib_list != None:
+        if lib_list is not None:
             solution = generate_solution(lib_list, libraries, scores)
+
 
 def mutate_solution(solution, libraries, mutation_no):
     uniques = set(solution)
-    old_lib_ids = random.sample(list(uniques), ceil(mutation_no*len(uniques)))
+    old_lib_ids = random.sample(list(uniques), ceil(mutation_no * len(uniques)))
 
     new_solution = copy.deepcopy(solution)
     for i in old_lib_ids:
@@ -204,16 +213,17 @@ def mutate_solution(solution, libraries, mutation_no):
 
         new_solution = first_part
 
-        if new_lib.id not in new_solution and new_lib.signup_days <= remaining_days: 
+        if new_lib.id not in new_solution and new_lib.signup_days <= remaining_days:
             for _ in range(new_lib.signup_days):
                 new_solution.append(new_lib.id)
-                        
+
         new_solution.extend(second_part)
 
-        while(len(new_solution) < len(solution)):
+        while len(new_solution) < len(solution):
             new_solution.append(-1)
 
     return new_solution
+
 
 def swap_mutation(solution, libraries):
     uniques = set(solution)
@@ -231,13 +241,20 @@ def swap_mutation(solution, libraries):
 
     new_solution = solution[:day1]
     new_solution.extend([lib2 for d in range(signup2)])
-    new_solution.extend(solution[day1+signup1:day2])
+    new_solution.extend(solution[day1 + signup1:day2])
     new_solution.extend([lib1 for d in range(signup1)])
-    new_solution.extend(solution[day2+signup2:])
+    new_solution.extend(solution[day2 + signup2:])
 
-    return new_solution                  
+    return new_solution
+
 
 def get_parameters(inputfile):
+    population_size = 50
+    generations = 1000
+    mutation_prob = 0.2
+    swap_prob = 0.2
+    population_variation = 0.2
+
     if inputfile == "b_read_on.txt":
         population_size = 50
         generations = 1000
