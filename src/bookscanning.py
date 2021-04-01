@@ -54,7 +54,7 @@ def bookScanning(inputfile, algorithm):
     write_output(inputfile, solution)
 
 def genetic(inputfile):
-    n_books, n_libraries, n_days, scores, libraries = scan_file("input/" + inputfile)
+    _, scores, libraries = scan_file("input/" + inputfile)
     population_size, generations, mutation_prob, swap_prob, population_variation = get_parameters(inputfile)
 
     print(population_size, generations, mutation_prob, swap_prob, population_variation)
