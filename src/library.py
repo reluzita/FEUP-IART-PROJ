@@ -22,9 +22,9 @@ class Library:
         remaining = days - self.signup_days
         n_books = self.books_per_day * remaining
         self.scannedBooks = self.books[:n_books]
-  
+
     def __eq__(self, other):
-        return(self.__class__ == other.__class__ and self.id == other.id)
+        return self.__class__ == other.__class__ and self.id == other.id
 
     def __hash__(self):
         return self.id

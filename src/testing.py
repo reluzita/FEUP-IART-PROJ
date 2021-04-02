@@ -2,12 +2,12 @@ import sys
 from library import Library 
 from solution import Solution
 from utils import greedy, score, generate_solution, find_first_neighbour, find_best_neighbour, random_neighbour, cooling_function, accept_with_probability
+from genetic_algorithm import generate_random
 from io_funcs import scan_file, write_output, read_output
 import datetime
-import copy
-import random
-from genetic_algorithm import genetic_algorithm, mutate_solution, generate_random, crossover, get_parameters
+
 import matplotlib.pyplot as plt
+
 
 if __name__ == "__main__":
     n_days, scores, libraries = scan_file("input/e_so_many_books.txt")
@@ -62,7 +62,8 @@ if __name__ == "__main__":
     best_scores = []
     avg_scores = []
     for i in range(generations):
-        new_population = genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, population_variation)
+        new_population = genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob,
+                                           population_variation)
         population = []
         for s in new_population:
             if s in population:
@@ -73,7 +74,7 @@ if __name__ == "__main__":
                 population.append(s)
 
         best = sorted(population, key=lambda x: x.score, reverse=True)[0]
-        mean = sum([x.score for x in population])/len(population)
+        mean = sum([x.score for x in population]) / len(population)
 
         best_scores.append(best.score)
         avg_scores.append(mean)
