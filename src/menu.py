@@ -54,13 +54,13 @@ def best_scores():
     print(" Best Scores\n")
 
     print(" File                         | Score     | Algorithm")
-    print("-----------------------------------------------------------")
+    print("-------------------------------------------------------------------")
     print(" a_example.txt                |        21 | Greedy")
     print(" b_read_on.txt                | 5 822 900 | Greedy")
     print(" c_incunabula.txt             | 5 689 952 | Random Neighbor")
     print(" d_tough_choices.txt          | 5 028 530 | Greedy")
-    print(" e_so_many_books.txt          | 5 034 888 | Greedy")
-    print(" f_libraries_of_the_world.txt | 5 308 034 | Greedy")
+    print(" e_so_many_books.txt          | 5 037 291 | Genetic")
+    print(" f_libraries_of_the_world.txt | 5 329 948 | Simulated Annealing")
 
     print("\n***************************************")
     input("Press enter to return to main menu...")

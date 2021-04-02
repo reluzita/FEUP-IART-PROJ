@@ -190,7 +190,7 @@ def cooling_function(t):
     return temp / (1 + t * t)
 
 
-# finding a greedy solution for the problem, at each step, the best current choice is made
+# function that optimizes the given solution with the simulated annealing algorithm
 def simulated_annealing(solution, libraries, scores, n_days):
     not_accepted = 0
     time = 0
