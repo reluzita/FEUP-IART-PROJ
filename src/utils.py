@@ -203,7 +203,10 @@ def random_neighbour(solution, libraries, scores, n_days, heuristic):
 
     remaining_days = libraries[current_lib].signup_days + solution.libraries_list.count(-1)
     all_libraries = [lib for lib in libraries if lib.id not in solution.libraries_list and lib.signup_days <= remaining_days]
-    if heuristic:
+
+    if len(all_libraries) == 0: return solution
+
+    if heuristic: # if we want to apply the heuristic
         lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books)
     else:
         lib_id = random.choice(all_libraries).id
@@ -228,7 +231,7 @@ def random_neighbour(solution, libraries, scores, n_days, heuristic):
             new_day+=1
             day+=1
 
-    while len(new_list) < n_days:
+    while len(new_list) < n_days: # if the new solution does not occupy n_days we fill it with -1
         new_list.append(-1)
 
     new_score = score(scanned_books, scores)
@@ -236,8 +239,7 @@ def random_neighbour(solution, libraries, scores, n_days, heuristic):
     return Solution(new_list, new_score, books2lib)
 
 
-def greedy(libraries, n_days,
-           scores):  # finding a greedy solution for the problem, at each step, the best current choice is made
+def greedy(libraries, n_days, scores):  # finding a greedy solution for the problem, at each step, the best current choice is made
     day = 0
     solution = [-1 for i in range(n_days)]
     scanned_books_set = set()
@@ -256,11 +258,14 @@ def greedy(libraries, n_days,
             day += 1
         all_libraries.remove(lib)
 
+    while len(solution) < n_days:
+        solution.append(-1)
+
     return Solution(solution, score(scanned_books_set, scores), scanned_books_dict)
 
 
 def cooling_function(t):  # stabilizes at 140 iterations
-    temp = 300
+    temp = 500
     return temp / (1 + t*t)
     
 
@@ -279,10 +284,10 @@ def simulated_annealing(solution, libraries, scores, n_days):
     not_accepted = 0
     time = 0
 
-    while not_accepted < 30:
+    while not_accepted < 200:
         new_solution = random_neighbour(solution, libraries, scores, n_days, False) # gets new solution using random_descendent on previous found solution
         t = cooling_function(time)
-        
+        print(t)
         if t < 0.01: break # no need to keep trying to "cool down"
         delta = new_solution.score - solution.score
 
@@ -293,5 +298,6 @@ def simulated_annealing(solution, libraries, scores, n_days):
             print("Found better:", solution.score)
 
         time += 1
- 
+
+    print(time)
     return solution

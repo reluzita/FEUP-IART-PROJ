@@ -26,7 +26,7 @@ def write_output(input_name, solution):
     file.close()
 
 
-def read_output(file, libraries, scores):
+def read_output(file, libraries, scores, n_days):
     with open(file, 'r', encoding='utf-8') as ifp:
         lines = ifp.readlines()
 
@@ -41,6 +41,9 @@ def read_output(file, libraries, scores):
             libraries_list.append(lib_id)
         books2lib[lib_id] = [int(x) for x in lines[i * 2 + 2].split()]
         books.update(books2lib[lib_id])
+        
+    while len(libraries_list) < n_days:
+        libraries_list.append(-1)
 
     return Solution(libraries_list, score(books, scores), books2lib)
 

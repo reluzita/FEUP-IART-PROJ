@@ -22,7 +22,7 @@ def book_scanning(inputfile, algorithm, greedy_injection):
         solution = greedy(all_libraries, n_days, scores)
     else:
         if greedy_injection:
-            solution = read_output("greedy/" + inputfile, libraries, scores)
+            solution = read_output("greedy/" + inputfile, libraries, scores, n_days)
         else:
             solution = generate_random(n_days, libraries, scores)
 
