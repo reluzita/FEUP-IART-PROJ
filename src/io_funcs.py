@@ -5,8 +5,9 @@ from solution import Solution
 from utils import read_libraries, score
 
 
+# function that writes the solution in the respective file (see format in the problem description)
 def write_output(input_name, solution):
-    output_name = "output/" + input_name
+    output_name = "output/" + input_name  # output file has the same name as input file
     file = open(output_name, "w")
 
     libraries = []
@@ -26,6 +27,7 @@ def write_output(input_name, solution):
     file.close()
 
 
+# function that translates an output file into a solution
 def read_output(file, libraries, scores, n_days):
     with open(file, 'r', encoding='utf-8') as ifp:
         lines = ifp.readlines()
@@ -41,13 +43,14 @@ def read_output(file, libraries, scores, n_days):
             libraries_list.append(lib_id)
         books2lib[lib_id] = [int(x) for x in lines[i * 2 + 2].split()]
         books.update(books2lib[lib_id])
-        
+
     while len(libraries_list) < n_days:
         libraries_list.append(-1)
 
     return Solution(libraries_list, score(books, scores), books2lib)
 
 
+# function that translates an input file into a libraries array (see format in the problem description)
 def scan_file(file):
     if os.stat(file).st_size == 0:
         print("File is empty!")

@@ -12,8 +12,8 @@ class Solution:
         print("         Solution")
         print("-----------------------------")
 
-        print("Score:", self.score)
-        print("Elapsed Time:", str(elapsed_time))
+        print("Score:", self.score)  # prints total score
+        print("Elapsed Time:", str(elapsed_time))  # prints elapsed time
 
     def __eq__(self, obj):
         return self.score == obj.score and functools.reduce(lambda x, y: x and y,

@@ -163,14 +163,16 @@ def generate_random(n_days, libraries, scores):
 
     day = 0
     while day < n_days:
-        if len(not_used) == 0: break
+        if len(not_used) == 0:
+            break
         lib_id = random.choice(not_used)
         lib = libraries[lib_id]
         while len(not_used) > 1 and lib.signup_days > n_days - day:
             not_used.remove(lib_id)
             lib_id = random.choice(not_used)
             lib = libraries[lib_id]
-        if len(not_used) == 1: break
+        if len(not_used) == 1:
+            break
         for _ in range(lib.signup_days):
             libraries_list[day] = lib_id
             day += 1
@@ -242,14 +244,16 @@ def swap_mutation(solution, libraries):
     signup2 = libraries[lib2].signup_days
 
     new_solution = solution[:day1]
-    new_solution.extend([lib2 for d in range(signup2)])
+    new_solution.extend([lib2 for _ in range(signup2)])
     new_solution.extend(solution[day1 + signup1:day2])
-    new_solution.extend([lib1 for d in range(signup1)])
+    new_solution.extend([lib1 for _ in range(signup1)])
     new_solution.extend(solution[day2 + signup2:])
 
     return new_solution
 
 
+# function that given an input file returns the values for population size, number of generations, mutation and swap
+# probabilities and population variation
 def get_parameters(inputfile):
     population_size = 50
     generations = 1000
@@ -257,6 +261,7 @@ def get_parameters(inputfile):
     swap_prob = 0.2
     population_variation = 0.2
 
+    # all the below values were chosen after a battery of tests
     if inputfile == "b_read_on.txt":
         population_size = 50
         generations = 1000

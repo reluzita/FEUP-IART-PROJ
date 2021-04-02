@@ -101,10 +101,21 @@ def algorithm_menu(file):
         if algorithm == 7:
             break
 
-        if 1 <= algorithm <= 5:
+        if algorithm == 1:
             print("\n***************************************")
             print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
-            book_scanning(file, algorithm, True)
+            book_scanning(file, algorithm, False)
+
+        elif 2 <= algorithm <= 5:
+            options = {"1": "Use greedy solution", "2": "Use random solution"}
+            message = "What do you want to do?"
+            option = print_menu(options, message)
+
+            greedy_injection = True if option == 1 else False
+
+            print("\n***************************************")
+            print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
+            book_scanning(file, algorithm, greedy_injection)
 
         elif algorithm == 6:
             menu_genetic(file)
@@ -123,7 +134,6 @@ def menu_genetic(file):
 
     population_size, generations, mutation_prob, swap_prob, population_variation = get_parameters(file)
 
-    # value, default, isInteger, min, max
     if choice == 2:
         print("\n***************************************")
         population_size = value_input("Population Size", population_size, True, 6, 100)
