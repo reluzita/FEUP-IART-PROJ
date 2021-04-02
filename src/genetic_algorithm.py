@@ -259,8 +259,8 @@ def get_parameters(inputfile):
         swap_prob = 0.05
         population_variation = 0.001
     elif inputfile == "e_so_many_books.txt":
-        population_size = 50
-        generations = 1000
+        population_size = 20
+        generations = 500
         mutation_prob = 0.2
         swap_prob = 0.2
         population_variation = 0.2

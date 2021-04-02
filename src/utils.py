@@ -51,107 +51,117 @@ def read_libraries(lines, n_libraries, scores):
     return libraries
 
 def find_best_neighbour(solution, libraries, scores, n_days):
-    best_score = solution.score
-    best_libraries = copy.deepcopy(solution.libraries_list)
-    best_books = copy.deepcopy(solution.books2lib)
+    best_solution = solution
     found_better = False
 
-    libraries_set = set(solution.libraries_list)
-    if -1 in libraries_set: 
-        libraries_set.remove(-1)
+    n_days = len(solution.libraries_list)
 
-    for current_lib in libraries_set:
+    unique_libraries = set(solution.libraries_list)
+    if -1 in unique_libraries: 
+        unique_libraries.remove(-1)
+
+    free_slots = solution.libraries_list.count(-1)
+    for current_lib in unique_libraries:
         day = 0
+        books2lib = dict()
+        scanned_books = set()
         new_list = []
-        scanned_books_dict = dict()
-        scanned_books_set = set()
-        all_libraries = copy.deepcopy(libraries)
 
-        while day < len(solution.libraries_list):
+        while day < solution.libraries_list.index(current_lib):
             lib = solution.libraries_list[day]
-            if lib == -1: 
-                break
-            elif lib == current_lib:
-                all_libraries.remove(libraries[lib])
-                break
-            else:
-                scanned_books_dict[lib] = solution.books2lib[lib]
-                scanned_books_set.update(scanned_books_dict[lib])
-                for _ in range(libraries[lib].signup_days):
-                    new_list.append(lib)
-                    day += 1
-                all_libraries.remove(libraries[lib])
-
+            books2lib[lib] = solution.books2lib[lib]
+            scanned_books.update(books2lib[lib])
+            for _ in range(libraries[lib].signup_days):
+                new_list.append(lib)
+                day+=1
         
-        while day < n_days and len(all_libraries) > 0:
-            lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
-            if lib_id == -1:
-                break
-            
-            scanned_books_dict[lib_id] = books
-            scanned_books_set.update(books)
-            new_list.append(libraries[lib_id])
-            day += libraries[lib_id].signup_days
-            all_libraries.remove(libraries[lib_id])
-
-        new_score = score(scanned_books_set, scores)
-        if new_score > best_score:
-            found_better = True
-            best_libraries = copy.deepcopy(new_list)
-            best_books = copy.deepcopy(scanned_books_dict)
-            best_score = new_score
-            print("better!")
-        else:
-            print("not better :(")
-
-    return found_better, Solution(best_libraries, best_score, best_books)
-
-def find_first_neighbour(solution, libraries, scores, n_days):
-    libraries_set = set(solution.libraries_list)
-    if -1 in libraries_set: 
-        libraries_set.remove(-1)
-
-    for current_lib in libraries_set:
-        day = 0
-        new_list = []
-        scanned_books_dict = dict()
-        scanned_books_set = set()
-        all_libraries = copy.deepcopy(libraries)
-
-        while day < len(solution.libraries_list):
-            lib = solution.libraries_list[day]
-            if libraries == -1: 
-                break
-            elif lib == current_lib:
-                all_libraries.remove(libraries[lib])
-                break
-            else:
-                scanned_books_dict[lib] = solution.books2lib[lib]
-                scanned_books_set.update(scanned_books_dict[lib])
-                for _ in range(libraries[lib].signup_days):
-                    new_list.append(lib)
-                    day += 1
-                all_libraries.remove(libraries[lib])
-
-        while day < n_days and len(all_libraries) > 0:
-            lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
-            if lib_id == -1:
-                break
-            
-            scanned_books_dict[lib_id] = books
-            scanned_books_set.update(books)
+        remaining_days = libraries[current_lib].signup_days + free_slots
+        all_libraries = [lib for lib in libraries if lib.id not in solution.libraries_list and lib.signup_days <= remaining_days]
+        lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books)
+        new_day = day
+        if lib_id != -1:
+            books2lib[lib_id] = books
+            scanned_books.update(books)
             for _ in range(libraries[lib_id].signup_days):
                 new_list.append(lib_id)
-                day += 1
-            all_libraries.remove(libraries[lib_id])
+                new_day+=1
 
-        new_score = score(scanned_books_set, scores)
+        day += libraries[current_lib].signup_days
+    
+        while day < n_days:
+            lib = solution.libraries_list[day]
+            if lib == -1: break
+            books2lib[lib] = libraries[lib].get_books(n_days - new_day, scanned_books)
+            scanned_books.update(books2lib[lib])
+            for _ in range(libraries[lib].signup_days):
+                new_list.append(lib)
+                new_day+=1
+                day+=1
+
+        while len(new_list) < n_days:
+            new_list.append(-1)
+
+        new_score = score(scanned_books, scores)
+        if new_score > best_solution.score:
+            found_better = True
+            best_solution = Solution(new_list, new_score, books2lib)
+            print("Found better:", new_score)
+
+    return found_better, best_solution
+
+def find_first_neighbour(solution, libraries, scores, n_days):
+    n_days = len(solution.libraries_list)
+
+    unique_libraries = set(solution.libraries_list)
+    if -1 in unique_libraries: 
+        unique_libraries.remove(-1)
+
+    free_slots = solution.libraries_list.count(-1)
+    for current_lib in unique_libraries:
+        day = 0
+        books2lib = dict()
+        scanned_books = set()
+        new_list = []
+
+        while day < solution.libraries_list.index(current_lib):
+            lib = solution.libraries_list[day]
+            books2lib[lib] = solution.books2lib[lib]
+            scanned_books.update(books2lib[lib])
+            for _ in range(libraries[lib].signup_days):
+                new_list.append(lib)
+                day+=1
+        
+        remaining_days = libraries[current_lib].signup_days + free_slots
+        all_libraries = [lib for lib in libraries if lib.id not in solution.libraries_list and lib.signup_days <= remaining_days]
+        lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books)
+        new_day = day
+        if lib_id != -1:
+            books2lib[lib_id] = books
+            scanned_books.update(books)
+            for _ in range(libraries[lib_id].signup_days):
+                new_list.append(lib_id)
+                new_day+=1
+
+        day += libraries[current_lib].signup_days
+    
+        while day < n_days:
+            lib = solution.libraries_list[day]
+            if lib == -1: break
+            books2lib[lib] = libraries[lib].get_books(n_days - new_day, scanned_books)
+            scanned_books.update(books2lib[lib])
+            for _ in range(libraries[lib].signup_days):
+                new_list.append(lib)
+                new_day+=1
+                day+=1
+
+        while len(new_list) < n_days:
+            new_list.append(-1)
+
+        new_score = score(scanned_books, scores)
         if new_score > solution.score:
-            print("better!")
-            return True, Solution(new_list, new_score, scanned_books_dict)
-        else:
-            print("not better :(")
-
+            print("Found better:", solution.score)
+            return True, Solution(new_list, new_score, books2lib)
+    
     return False, solution
 
 def choose_random_neighbour(libraries, libraries_set, n_days): # returns a random id of a library 
@@ -165,42 +175,54 @@ def choose_random_neighbour(libraries, libraries_set, n_days): # returns a rando
 
 
 def random_neighbour(solution, libraries, scores, n_days):
-    libraries_set = set(solution.libraries_list)
-    if -1 in libraries_set: 
-        libraries_set.remove(-1)
+    unique_libraries = set(solution.libraries_list)
+    if -1 in unique_libraries: 
+        unique_libraries.remove(-1)
 
-    current_lib = random.choice(list(libraries_set))
+    current_lib = random.choice(list(unique_libraries))
+
     day = 0
+    books2lib = dict()
+    scanned_books = set()
     new_list = []
-    scanned_books_dict = dict()
-    scanned_books_set = set()
-    all_libraries = copy.deepcopy(libraries)
-    all_libraries.remove(libraries[current_lib])
 
-    new_day = solution.libraries_list.index(current_lib)
-    new_list = solution.libraries_list[:new_day]
-    while day < new_day:
-        lib = libraries[solution.libraries_list[day]]
-        scanned_books_dict[lib.id] = solution.books2lib[lib.id]
-        scanned_books_set.update(scanned_books_dict[lib.id])
-        all_libraries.remove(lib)
-        day += lib.signup_days
+    while day < solution.libraries_list.index(current_lib):
+        lib = solution.libraries_list[day]
+        books2lib[lib] = solution.books2lib[lib]
+        scanned_books.update(books2lib[lib])
+        for _ in range(libraries[lib].signup_days):
+            new_list.append(lib)
+            day+=1
 
-    while day < n_days and len(all_libraries) > 0:
-        lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books_set)
-        if lib_id == -1:
-            break
-        
-        scanned_books_dict[lib_id] = books
-        scanned_books_set.update(books)
+    remaining_days = libraries[current_lib].signup_days + solution.libraries_list.count(-1)
+    all_libraries = [lib for lib in libraries if lib.id not in solution.libraries_list and lib.signup_days <= remaining_days]
+    lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books)
+    new_day = day
+    if lib_id != -1:
+        books2lib[lib_id] = books
+        scanned_books.update(books)
         for _ in range(libraries[lib_id].signup_days):
             new_list.append(lib_id)
-            day += 1
-        all_libraries.remove(libraries[lib_id])
+            new_day+=1
 
-    new_score = score(scanned_books_set, scores)
+    day += libraries[current_lib].signup_days
 
-    return Solution(new_list, new_score, scanned_books_dict)
+    while day < n_days:
+        lib = solution.libraries_list[day]
+        if lib == -1: break
+        books2lib[lib] = libraries[lib].get_books(n_days - new_day, scanned_books)
+        scanned_books.update(books2lib[lib])
+        for _ in range(libraries[lib].signup_days):
+            new_list.append(lib)
+            new_day+=1
+            day+=1
+
+    while len(new_list) < n_days:
+        new_list.append(-1)
+
+    new_score = score(scanned_books, scores)
+
+    return Solution(new_list, new_score, books2lib)
 
 
 def greedy(libraries, n_days, scores): # finding a greedy solution for the problem, at each step, the best current choice is made
@@ -227,7 +249,7 @@ def greedy(libraries, n_days, scores): # finding a greedy solution for the probl
  
 def cooling_function(t):    #estabilizes at 140 iterations
     temp = 300
-    return temp / (1 + t)
+    return temp / (1 + t*t)
     
 
 def accept_with_probability(delta, t): # function to calculate the if the solution is accepted with a certain probability
@@ -242,8 +264,9 @@ def accept_with_probability(delta, t): # function to calculate the if the soluti
 def simulated_annealing(solution, libraries, scores, n_days):
     best_score = solution.score
     not_accepted = 0
+    time = 0
 
-    for time in range(500):
+    while not_accepted < 30:
         new_solution = random_neighbour(solution, libraries, scores, n_days) # gets new solution using random_descendent on previous found solution
         t = cooling_function(time)
 
@@ -252,11 +275,11 @@ def simulated_annealing(solution, libraries, scores, n_days):
 
         if delta <= 0 and not accept_with_probability(delta, t): 
             not_accepted += 1
-            if not_accepted > 30: break
-            continue
         else:
             best_score = new_solution.score
             solution = new_solution
             print(best_score)
+
+        time += 1
  
     return solution

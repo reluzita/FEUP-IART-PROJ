@@ -42,6 +42,7 @@ def bookScanning(inputfile, algorithm):
             for _ in range(30):
                 new_solution = random_neighbour(solution, libraries, scores, n_days)
                 if new_solution.score > solution.score:
+                    print("Found better:", new_solution.score)
                     solution = new_solution
     
         if algorithm == 5:
