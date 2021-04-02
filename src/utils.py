@@ -265,7 +265,7 @@ def greedy(libraries, n_days, scores):  # finding a greedy solution for the prob
 
 
 def cooling_function(t):  # stabilizes at 140 iterations
-    temp = 500
+    temp = 300
     return temp / (1 + t*t)
     
 
@@ -283,21 +283,24 @@ def accept_with_probability(delta, t):
 def simulated_annealing(solution, libraries, scores, n_days):
     not_accepted = 0
     time = 0
-
+    best_solution = solution
+    print(best_solution.score)
     while not_accepted < 200:
-        new_solution = random_neighbour(solution, libraries, scores, n_days, False) # gets new solution using random_descendent on previous found solution
+        new_solution = random_neighbour(solution, libraries, scores, n_days, True) # gets new solution using random_descendent on previous found solution
         t = cooling_function(time)
         print(t)
-        if t < 0.01: break # no need to keep trying to "cool down"
+        if t < 0.001: break # no need to keep trying to "cool down"
         delta = new_solution.score - solution.score
 
         if delta <= 0 and not accept_with_probability(delta, t): 
             not_accepted += 1
         else:
             solution = new_solution
-            print("Found better:", solution.score)
+            if solution.score > best_solution.score: 
+                best_solution = solution
+            print("Accepted:", solution.score)
 
         time += 1
 
     print(time)
-    return solution
+    return best_solution
