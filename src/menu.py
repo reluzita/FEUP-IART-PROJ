@@ -104,7 +104,7 @@ def algorithm_menu(file):
         if 1 <= algorithm <= 5:
             print("\n***************************************")
             print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
-            book_scanning(file, algorithm)
+            book_scanning(file, algorithm, True)
 
         elif algorithm == 6:
             menu_genetic(file)

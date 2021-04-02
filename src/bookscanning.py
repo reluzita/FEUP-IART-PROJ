@@ -1,7 +1,7 @@
 import copy
 import datetime
 
-from genetic_algorithm import genetic_algorithm, mutate_solution
+from genetic_algorithm import genetic_algorithm, mutate_solution, generate_random
 from io_funcs import scan_file, write_output, read_output
 from utils import find_best_neighbour, find_first_neighbour, generate_solution, simulated_annealing, random_neighbour
 from utils import greedy
@@ -11,7 +11,7 @@ def get_elapsed_time(t):
     return datetime.datetime.now() - t
 
 
-def book_scanning(inputfile, algorithm):
+def book_scanning(inputfile, algorithm, greedy_injection):
     n_days, scores, libraries = scan_file("input/" + inputfile)
 
     t = datetime.datetime.now()
@@ -21,7 +21,10 @@ def book_scanning(inputfile, algorithm):
         all_libraries = copy.deepcopy(libraries)
         solution = greedy(all_libraries, n_days, scores)
     else:
-        solution = read_output("greedy/" + inputfile, libraries, scores)
+        if greedy_injection:
+            solution = read_output("greedy/" + inputfile, libraries, scores)
+        else:
+            solution = generate_random(n_days, libraries, scores)
 
         print("\n--------------------------")
         print("Greedy is done, optimizing now!")
@@ -39,7 +42,7 @@ def book_scanning(inputfile, algorithm):
 
         if algorithm == 4:
             for _ in range(30):
-                new_solution = random_neighbour(solution, libraries, scores, n_days)
+                new_solution = random_neighbour(solution, libraries, scores, n_days, True)
                 if new_solution.score > solution.score:
                     print("Found better:", new_solution.score)
                     solution = new_solution

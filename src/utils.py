@@ -181,7 +181,7 @@ def choose_random_neighbour(libraries, libraries_set, n_days):  # returns a rand
     return 0
 
 
-def random_neighbour(solution, libraries, scores, n_days):
+def random_neighbour(solution, libraries, scores, n_days, heuristic):
     unique_libraries = set(solution.libraries_list)
     if -1 in unique_libraries: 
         unique_libraries.remove(-1)
@@ -203,7 +203,11 @@ def random_neighbour(solution, libraries, scores, n_days):
 
     remaining_days = libraries[current_lib].signup_days + solution.libraries_list.count(-1)
     all_libraries = [lib for lib in libraries if lib.id not in solution.libraries_list and lib.signup_days <= remaining_days]
-    lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books)
+    if heuristic:
+        lib_id, books = choose_best_score(n_days - day, all_libraries, scores, scanned_books)
+    else:
+        lib_id = random.choice(all_libraries).id
+        books = libraries[lib_id].get_books(remaining_days, scanned_books)
     new_day = day
     if lib_id != -1:
         books2lib[lib_id] = books
@@ -276,7 +280,7 @@ def simulated_annealing(solution, libraries, scores, n_days):
     time = 0
 
     while not_accepted < 30:
-        new_solution = random_neighbour(solution, libraries, scores, n_days) # gets new solution using random_descendent on previous found solution
+        new_solution = random_neighbour(solution, libraries, scores, n_days, False) # gets new solution using random_descendent on previous found solution
         t = cooling_function(time)
         
         if t < 0.01: break # no need to keep trying to "cool down"
