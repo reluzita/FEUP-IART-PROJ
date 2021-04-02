@@ -57,7 +57,7 @@ def best_scores():
     print("-------------------------------------------------------------------")
     print(" a_example.txt                |        21 | Greedy")
     print(" b_read_on.txt                | 5 822 900 | Greedy")
-    print(" c_incunabula.txt             | 5 689 952 | Random Neighbor")
+    print(" c_incunabula.txt             | 5 690 054 | Random Neighbour")
     print(" d_tough_choices.txt          | 5 028 530 | Greedy")
     print(" e_so_many_books.txt          | 5 037 291 | Genetic")
     print(" f_libraries_of_the_world.txt | 5 329 948 | Simulated Annealing")
@@ -91,14 +91,22 @@ def file_menu():
 
 
 def algorithm_menu(file):
-    algorithms = {"1": "Greedy", "2": "Local Search - First Neighbour", "3": "Local Search - Best Neighbour",
-                  "4": "Local Search - Random Neighbour", "5": "Simulated Annealing", "6": "Genetic",
-                  "7": "Choose another file"}
+
+    if file == "a_example.txt":
+        algorithms = {"1": "Greedy", "2": "Local Search - First Neighbour", "3": "Local Search - Best Neighbour",
+                      "4": "Local Search - Random Neighbour", "5": "Simulated Annealing",
+                      "6": "Choose another file"}
+    else:
+        algorithms = {"1": "Greedy", "2": "Local Search - First Neighbour", "3": "Local Search - Best Neighbour",
+                      "4": "Local Search - Random Neighbour", "5": "Simulated Annealing", "6": "Genetic",
+                      "7": "Choose another file"}
+
     message = "Choose the algorithm to apply to " + file + ": "
 
     while True:
         algorithm = print_menu(algorithms, message)
-        if algorithm == 7:
+
+        if algorithm == 7 or (file == "a_example.txt" and algorithm == 6):
             break
 
         if algorithm == 1:
