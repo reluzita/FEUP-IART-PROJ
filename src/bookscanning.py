@@ -1,13 +1,14 @@
 import copy
 import datetime
 
+from algorithms import greedy, find_first_neighbour, find_best_neighbour, random_neighbour, simulated_annealing
 from genetic_algorithm import genetic_algorithm, mutate_solution, generate_random
 from io_funcs import scan_file, write_output, read_output
-from utils import find_best_neighbour, find_first_neighbour, generate_solution, simulated_annealing, random_neighbour
-from utils import greedy
-
 
 # calculates the elapsed time given a start datetime
+from utils import generate_solution
+
+
 def get_elapsed_time(t):
     return datetime.datetime.now() - t
 
@@ -39,11 +40,11 @@ def book_scanning(inputfile, algorithm, greedy_injection):
 
         if algorithm == 2:  # local search - first neighbour
             while found_better:
-                found_better, solution = find_first_neighbour(solution, libraries, scores, n_days)
+                found_better, solution = find_first_neighbour(solution, libraries, scores)
 
         elif algorithm == 3:  # local search - best neighbour
             while found_better:
-                found_better, solution = find_best_neighbour(solution, libraries, scores, n_days)
+                found_better, solution = find_best_neighbour(solution, libraries, scores)
 
         elif algorithm == 4:  # local search - random neighbour
             for _ in range(30):  # executes random neighbour 30 times to give it a chance to find a better solution
@@ -90,13 +91,16 @@ def genetic(inputfile, population_size, generations, mutation_prob, swap_prob, p
         population = []
         for s in new_population:
             if s in population:  # if population contains s, mutates that solution and appends it to population
-                best = sorted(new_population, key=lambda x: x.score, reverse=True)[0]  # the best solution is the first one when the array is ordered by scores
+                best = sorted(new_population, key=lambda x: x.score, reverse=True)[
+                    0]  # the best solution is the first one when the array is ordered by scores
                 new_solution = mutate_solution(best.libraries_list, libraries, 0.1)  # mutates the solution
-                population.append(generate_solution(new_solution, libraries, scores))  # generates new solution and appends it to the population
+                population.append(generate_solution(new_solution, libraries,
+                                                    scores))  # generates new solution and appends it to the population
             else:  # if population does not contains s, appends it
                 population.append(s)
 
-        best = sorted(population, key=lambda x: x.score, reverse=True)[0]  # the best solution is the first one when the array is ordered by scores
+        best = sorted(population, key=lambda x: x.score, reverse=True)[
+            0]  # the best solution is the first one when the array is ordered by scores
         mean = sum([x.score for x in population]) / len(population)  # calculates scores mean
 
         print(i, "- max:", best.score, "avg:", mean)

@@ -15,7 +15,7 @@ def tournament(population, np):
     return parent1, parent2
 
 
-def reproduce(p1, p2, libraries):
+def single_point_crossover(p1, p2, libraries):
     total_days = len(p1)
     crossoverpoints = []
 
@@ -68,7 +68,8 @@ def crossover(p1, p2, libraries):
         for lib in remaining_libs:
             n = libraries[lib].signup_days
             if n <= slots_before:
-                for _ in range(n): initial_part.append(lib)
+                for _ in range(n):
+                    initial_part.append(lib)
                 remaining_libs.remove(lib)
                 slots_before -= n
                 found = True
@@ -83,7 +84,8 @@ def crossover(p1, p2, libraries):
         for lib in remaining_libs:
             n = libraries[lib].signup_days
             if n <= slots_after:
-                for _ in range(n): final_part.append(lib)
+                for _ in range(n):
+                    final_part.append(lib)
                 remaining_libs.remove(lib)
                 slots_after -= n
                 found = True
