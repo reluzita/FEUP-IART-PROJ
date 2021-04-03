@@ -1,17 +1,82 @@
-Given a description of libraries and books available, plan which books to scan from
-which library to maximize the total score of all scanned books, taking into account that
-each library needs to be signed up before it can ship books.
+ ## Building and Running 
 
-*  Many libraries can have a copy of the same book, but we only need to scan each book once
+Run ```python main.py ``` on the src folder.
 
-* Only one library at a time can be going through this process
+After this the following menu will appear:
 
-* The libraries can be signed up in any order.
+```
+***************************************
+What do you want to do: 
 
-* Each library must be described only once.
-Note that:
-● You don’t need to scan all books from a library you describe.
-● If a library signup process nishes aer D days, its description will be ignored.
-● Books shipped aer D days will be ignored.
+1. Choose an input file
+2. See the best score for each file
+3. Exit
 
-Falta guardar os scanned books
+***************************************
+Insert a number from the menu: 1
+
+```
+Where the user must choose either one of the options.
+
+When choosing option 1:
+
+ ```
+ ***************************************
+Choose an input file:
+
+1. a_example.txt
+2. b_read_on.txt
+3. c_incunabula.txt
+4. d_tough_choices.txt
+5. e_so_many_books.txt
+6. f_libraries_of_the_world.txt
+7. Return to main menu
+
+***************************************
+```
+The user must choose the input file to aplly the algorithm and then the algorithm:
+```
+***************************************
+ Choose the algorithm to apply to c_incunabula.txt:
+
+1. Greedy
+2. Local Search - First Neighbour
+3. Local Search - Best Neighbour
+4. Local Search - Random Neighbour
+5. Simulated Annealing
+6. Genetic
+7. Choose another file
+
+***************************************
+ ```
+When the option is not the greedy algorithm, another menu to choose to either to use greedy as the initial solution or a random will appear:
+```
+***************************************
+What do you want to do?
+
+1. Use greedy solution
+2. Use random solution
+
+***************************************
+```
+
+If in the initial menu, the user chooses option 2, the following appears:
+
+```
+***************************************
+ Best Scores
+
+ File                         | Score     | Algorithm
+-------------------------------------------------------------------
+ a_example.txt                |        21 | Greedy
+ b_read_on.txt                | 5 822 900 | Greedy
+ c_incunabula.txt             | 5 690 054 | Random Neighbour
+ d_tough_choices.txt          | 5 028 530 | Greedy
+ e_so_many_books.txt          | 5 037 291 | Genetic
+ f_libraries_of_the_world.txt | 5 329 948 | Simulated Annealing
+
+***************************************
+Press enter to return to main menu...
+```
+
+ This project was developed using Python 3.
