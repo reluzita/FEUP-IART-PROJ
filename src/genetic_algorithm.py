@@ -4,6 +4,7 @@ from math import ceil
 
 from utils import score, generate_solution
 
+
 # tournament function, choosing the two parents to use for reproduction
 def tournament(population, np):
     # get a random sample of size np from the population and choose the one with higher score
@@ -18,12 +19,13 @@ def tournament(population, np):
     # return the two "winners"
     return parent1, parent2
 
+
 # function that performs single point crossover on two given solutions
 def single_point_crossover(p1, p2, libraries):
     total_days = len(p1)
     crossoverpoints = []
 
-    # find possible crossover points (array indeces where the library changes on both solutions)
+    # find possible crossover points (array indices where the library changes on both solutions)
     for i in range(total_days - 1):
         if p1[i] != p1[i + 1] and p2[i] != p2[i + 1]:
             crossoverpoints.append(i + 1)
@@ -48,6 +50,7 @@ def single_point_crossover(p1, p2, libraries):
 
     return child
 
+
 # function that performs linear order crossover on two given solutions
 def crossover(p1, p2, libraries):
     # get library ids in parent 1
@@ -70,7 +73,7 @@ def crossover(p1, p2, libraries):
         libs2.remove(-1)
     remaining_libs = list(filter(lambda x: x not in portion, list(libs2)))
 
-    #calculate remaining days to fill with libraries
+    # calculate remaining days to fill with libraries
     slots_before = point1
     slots_after = len(p1) - point2
 
@@ -106,7 +109,7 @@ def crossover(p1, p2, libraries):
                 break
         if not found:
             break
-    
+
     # concatenate all parts and return resulting solution
     child = initial_part
     child.extend(portion)
@@ -115,6 +118,7 @@ def crossover(p1, p2, libraries):
         child.append(-1)
 
     return child
+
 
 # function that removes duplicate libraries in solution
 def remove_duplicates(solution, duplicates, libraries):
@@ -149,6 +153,7 @@ def remove_duplicates(solution, duplicates, libraries):
 
     return final
 
+
 # function that given the libraries signup list for each day, calculates the total score of this solution
 def calculate_solution_score(sol, libraries, scores):
     books = set()
@@ -167,33 +172,39 @@ def calculate_solution_score(sol, libraries, scores):
     # return total score of the scanned books
     return score(books, scores)
 
+
 # function that simulates one generation of the genetic algorithm, generating the new generation given the current population
 def genetic_algorithm(population, libraries, scores, mutation_prob, swap_prob, population_variation):
     new_population = []
     # generate as many new solutions as the population size
     for _ in range(len(population)):
-        parent1, parent2 = tournament(population, 3) # choose two solutions to reproduce
-        child = crossover(parent1.libraries_list, parent2.libraries_list, libraries) # perform linear order crossover on chosen parents
-        new_population.append(generate_solution(child, libraries, scores)) # add generated solution to the new population
+        parent1, parent2 = tournament(population, 3)  # choose two solutions to reproduce
+        child = crossover(parent1.libraries_list, parent2.libraries_list,
+                          libraries)  # perform linear order crossover on chosen parents
+        new_population.append(
+            generate_solution(child, libraries, scores))  # add generated solution to the new population
 
     total_population = copy.deepcopy(new_population)
     total_population.extend(population)
 
-    mutate_population(total_population, libraries, scores, mutation_prob, swap_prob, population_variation) # perform mutations on the population, according to given propabilities
+    mutate_population(total_population, libraries, scores, mutation_prob, swap_prob,
+                      population_variation)  # perform mutations on the population, according to given probabilities
 
-    return sorted(total_population, key=lambda x: x.score, reverse=True)[:len(population)] # return new population containing the top n individuals, n being the initial population size
+    return sorted(total_population, key=lambda x: x.score, reverse=True)[:len(
+        population)]  # return new population containing the top n individuals, n being the initial population size
+
 
 # function that generates a random valid solution, given the number of days, libraries to scan and book scores
 def generate_random(n_days, libraries, scores):
-    not_used = [i for i in range(len(libraries))] # no library has been used yet
-    libraries_list = [-1 for j in range(n_days)] # fill solution with -1 to mark all days as "empty"
+    not_used = [i for i in range(len(libraries))]  # no library has been used yet
+    libraries_list = [-1 for j in range(n_days)]  # fill solution with -1 to mark all days as "empty"
 
     day = 0
     # fill solution while there are still days left
     while day < n_days:
         if len(not_used) == 0:
-            break # stop if all libraries have been used
-        lib_id = random.choice(not_used) # get a random library that hasn't been used
+            break  # stop if all libraries have been used
+        lib_id = random.choice(not_used)  # get a random library that hasn't been used
         lib = libraries[lib_id]
         # if the library has a signup time too large for he remaining days, remove it from possible choices and pick a new one
         while len(not_used) > 1 and lib.signup_days > n_days - day:
@@ -201,34 +212,38 @@ def generate_random(n_days, libraries, scores):
             lib_id = random.choice(not_used)
             lib = libraries[lib_id]
         if len(not_used) == 1:
-            break # stop if all libraries have been used
+            break  # stop if all libraries have been used
         # fill chosen library's days in the solution list and skip to the next library's signup day
         for _ in range(lib.signup_days):
             libraries_list[day] = lib_id
             day += 1
-        not_used.remove(lib_id) # remove library from the not used list
+        not_used.remove(lib_id)  # remove library from the not used list
 
-    return generate_solution(libraries_list, libraries, scores) # return solution object generated from the created list
+    return generate_solution(libraries_list, libraries,
+                             scores)  # return solution object generated from the created list
+
 
 # function that applies mutations on the population based on given probabilities
 def mutate_population(population, libraries, scores, mutation_prob, swap_prob, population_variation):
     # iterate over all individuals
     for solution in population:
         lib_list = None
-        if random.random() < mutation_prob: # mutate part of the genes of the solution with a mutation_prob probability
+        if random.random() < mutation_prob:  # mutate part of the genes of the solution with a mutation_prob probability
             lib_list = mutate_solution(solution.libraries_list, libraries, population_variation)
-        if random.random() < swap_prob: # swap two genes of the solution with a swap_prob probability
+        if random.random() < swap_prob:  # swap two genes of the solution with a swap_prob probability
             lib_list = swap_mutation(solution.libraries_list, libraries)
-        if lib_list is not None: # replace current solution with new solution object if any mutations occured
+        if lib_list is not None:  # replace current solution with new solution object if any mutations occurred
             solution = generate_solution(lib_list, libraries, scores)
 
-# function that mutates mutation_no percentage of the genes of a given solution 
+
+# function that mutates mutation_no percentage of the genes of a given solution
 def mutate_solution(solution, libraries, mutation_no):
     # get all libraries (genes) of the solution
     uniques = set(solution)
     if -1 in uniques:
         uniques.remove(-1)
-    old_lib_ids = random.sample(list(uniques), ceil(mutation_no * len(uniques))) # calculate number of genes to mutate and ramdomly select them
+    old_lib_ids = random.sample(list(uniques), ceil(
+        mutation_no * len(uniques)))  # calculate number of genes to mutate and randomly select them
 
     new_solution = copy.deepcopy(solution)
     # iterate over genes to mutate them by replacing them with a random library
@@ -243,7 +258,7 @@ def mutate_solution(solution, libraries, mutation_no):
         remaining_days = len(new_solution) - (len(first_part) + len(second_part))
 
         # get a random library until finding a valid one
-        new_lib = random.choice(libraries) 
+        new_lib = random.choice(libraries)
         checked = {new_lib}
         n = len(libraries)
         while (new_lib.id in new_solution or new_lib.signup_days > remaining_days) and len(checked) < n:
@@ -264,7 +279,8 @@ def mutate_solution(solution, libraries, mutation_no):
         while len(new_solution) < len(solution):
             new_solution.append(-1)
 
-    return new_solution # return mutated solution
+    return new_solution  # return mutated solution
+
 
 # function that swaps two genes of a given solution
 def swap_mutation(solution, libraries):
@@ -274,7 +290,7 @@ def swap_mutation(solution, libraries):
 
     day1 = solution.index(lib1)
     day2 = solution.index(lib2)
-    while day1 > day2: # if lib1 is scanned after lib2, select a new pair
+    while day1 > day2:  # if lib1 is scanned after lib2, select a new pair
         [lib1, lib2] = random.sample(uniques, 2)
         day1 = solution.index(lib1)
         day2 = solution.index(lib2)

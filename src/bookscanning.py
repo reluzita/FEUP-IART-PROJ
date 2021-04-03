@@ -13,6 +13,23 @@ def get_elapsed_time(t):
     return datetime.datetime.now() - t
 
 
+def get_solution_to_optimize(inputfile, libraries, scores, n_days, greedy_injection):
+
+    if greedy_injection:  # use greedy solution to execute a local search or simulated annealing
+        print("\n--------------------------------")
+        print(" Greedy is done, optimizing now!")
+        print("--------------------------------")
+        solution = read_output("greedy/" + inputfile, libraries, scores,
+                               n_days)  # reads the file with the greedy solution
+    else:
+        print("\n--------------------------------------------")
+        print(" Random Solution was found, optimizing now!")
+        print("--------------------------------------------")
+        solution = generate_random(n_days, libraries, scores)  # generates a random solution for the input file
+
+    return solution
+
+
 # function responsible for reading the input file, executing the given algorithm and writing the solution to a file
 def book_scanning(inputfile, algorithm, greedy_injection):
     n_days, scores, libraries = scan_file("input/" + inputfile)  # scans the input file and saves all the necessary info
@@ -24,18 +41,7 @@ def book_scanning(inputfile, algorithm, greedy_injection):
         all_libraries = copy.deepcopy(libraries)
         solution = greedy(all_libraries, n_days, scores)  # executes the greedy algorithm to get a solution
     else:
-        if greedy_injection:  # use greedy solution to execute a local search or simulated annealing
-            print("\n--------------------------------")
-            print(" Greedy is done, optimizing now!")
-            print("--------------------------------")
-            solution = read_output("greedy/" + inputfile, libraries, scores,
-                                   n_days)  # reads the file with the greedy solution
-        else:
-            print("\n--------------------------------------------")
-            print(" Random Solution was found, optimizing now!")
-            print("--------------------------------------------")
-            solution = generate_random(n_days, libraries, scores)  # generates a random solution for the input file
-
+        solution = get_solution_to_optimize(inputfile, libraries, scores, n_days, greedy_injection)
         found_better = True
 
         if algorithm == 2:  # local search - first neighbour
@@ -62,22 +68,17 @@ def book_scanning(inputfile, algorithm, greedy_injection):
 
 
 # function responsible for reading the input file, executing the genetic algorithm and writing the solution to a file
-def genetic(inputfile, population_size, generations, mutation_prob, swap_prob, population_variation):
+def genetic(inputfile, population_size, generations, mutation_prob, swap_prob, population_variation, greedy_injection):
     n_days, scores, libraries = scan_file("input/" + inputfile)  # scans the input file and saves all the necessary info
 
     t = datetime.datetime.now()  # starts the timer
 
-    greedy_solution = read_output("greedy/" + inputfile, libraries, scores,
-                                  n_days)  # reads the file with the greedy solution
+    solution = get_solution_to_optimize(inputfile, libraries, scores, n_days, greedy_injection)
 
-    print("\n--------------------------------")
-    print(" Greedy is done, optimizing now!")
-    print("--------------------------------")
-
-    population = [greedy_solution]  # first population is greedy solution
+    population = [solution]  # first population is greedy solution
 
     for i in range(population_size - 1):  # generates population
-        new_solution = mutate_solution(greedy_solution.libraries_list, libraries,
+        new_solution = mutate_solution(solution.libraries_list, libraries,
                                        population_variation)  # mutates the greedy solution
         population.append(generate_solution(new_solution, libraries,
                                             scores))  # generates new solution and appends it to the population

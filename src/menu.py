@@ -114,19 +114,18 @@ def algorithm_menu(file):
             print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
             book_scanning(file, algorithm, False)
 
-        elif 2 <= algorithm <= 5:
+        else:
             options = {"1": "Use greedy solution", "2": "Use random solution"}
             message = "What do you want to do?"
             option = print_menu(options, message)
 
             greedy_injection = True if option == 1 else False
 
-            print("\n***************************************")
-            print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
-            book_scanning(file, algorithm, greedy_injection)
+            if 2 <= algorithm <= 5:
+                print("\n***************************************")
+                print("Applying " + algorithms[str(algorithm)] + " to " + file, '\n')
 
-        elif algorithm == 6:
-            menu_genetic(file)
+        book_scanning(file, algorithm, greedy_injection) if 2 <= algorithm <= 5 else menu_genetic(file, greedy_injection)
 
         print("\n***************************************")
         input("Press enter to return to algorithms menu...")
@@ -134,7 +133,7 @@ def algorithm_menu(file):
     return 1
 
 
-def menu_genetic(file):
+def menu_genetic(file, greedy_injection):
     options = {"1": "Use default values", "2": "Personalize values"}
     message = "Genetic uses constant values for population size, number of generations, mutation and swap " \
               "probabilities and population variation. \nWhat do you want to do? "
@@ -152,7 +151,7 @@ def menu_genetic(file):
 
     print("\n***************************************")
     print("Applying Genetic to " + file, '\n')
-    genetic(file, population_size, generations, mutation_prob, swap_prob, population_variation)
+    genetic(file, population_size, generations, mutation_prob, swap_prob, population_variation, greedy_injection)
 
 
 # ##############################################################################################################################################################################
