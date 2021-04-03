@@ -34,7 +34,7 @@ Choose an input file:
 
 ***************************************
 ```
-The user must choose the input file to aplly the algorithm and then the algorithm:
+The user must choose the input file to apply the algorithm and then the algorithm:
 ```
 ***************************************
  Choose the algorithm to apply to c_incunabula.txt:
