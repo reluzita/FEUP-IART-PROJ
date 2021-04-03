@@ -60,7 +60,7 @@ What do you want to do?
 ***************************************
 ```
 
-If in the initial menu, the user chooses option 2, the following appears:
+If, in the initial menu, the user chooses option 2, the following appears:
 
 ```
 ***************************************
