@@ -1,4 +1,4 @@
-To compile, run and use the program, first the following libraries are required:
+To compile, run and use the program, python 3 must be installed and the following libraries are required:
 
 * pandas
 
